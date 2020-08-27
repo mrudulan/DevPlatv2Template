@@ -5,7 +5,7 @@
         "workspaceName": {
 			"type": "string",
 			"metadata": {
-				"description": "Specifies the name of the Azure Machine Learning workspace which will hold this datastore target."
+				"description": "Specifies the name of the Azure Machine Learning workspace which will hold this codejob target."
 			}
 		},
 		"codejobName": {
@@ -24,7 +24,7 @@
 			"type": "object",
 			"defaultValue": {},
 			"metadata": {
-				"description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
+				"description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on codejob. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
 			}
 		},
 		"location": {
