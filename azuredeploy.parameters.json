@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "value": "GET-PREREQ-workspaceResource"
+            "value": "mmscentral"
         },
         "codejobName": {
             "value": "test1"
@@ -15,7 +15,7 @@
             "value": {}
         },
         "location": {
-            "value": "centraluseauap"
+            "value": "westcentralus"
         }
     }
 }
