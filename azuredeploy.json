@@ -13,7 +13,7 @@
                 "[concat('Microsoft.MachineLearningServices/workspaces/', 'mmscentral')]"
             ],
             "apiVersion": "2020-09-01-preview",
-            "location": "westcentralus",
+            "location": "centraluseuap",
             "properties": {
                 "computeBinding": {
                     "computeId": "cpucluster",
