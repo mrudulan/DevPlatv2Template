@@ -1,12 +1,12 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "value": "GET-PREREQ-workspaceResource"
+            "value": "mmscentral"
         },
         "codejobName": {
-            "value": "test1"
+            "value": "test3"
         },
         "computeId": {
             "value": "cpucluster"
@@ -15,7 +15,7 @@
             "value": {}
         },
         "location": {
-            "value": "centraluseauap"
+            "value": "centraluseuap"
         }
     }
 }
