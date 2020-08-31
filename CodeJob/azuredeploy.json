@@ -39,19 +39,19 @@
     "variables": {},
     "resources": [
         {
-            "type": "Microsoft.MachineLearningServices/workspaces/codejobs",
-            "name": "[concat(parameters('workspaceName'), '/', parameters('codejobName'))]",
-			"apiVersion": "2020-09-01-preview",
-			"location": "westcentralus",
-			"properties": 
+                "type": "Microsoft.MachineLearningServices/workspaces/codejobs",
+                "name": "[concat(parameters('workspaceName'), '/', parameters('codejobName'))]",
+		"apiVersion": "2020-09-01-preview",
+		"location": "[parameters('location')]",
+		"properties": 
+		{
+			"computeBinding": 
 			{
-				"computeBinding": 
-				{
-					"computeId": "[parameters('computeId')]",
-					"nodeCount": "1"
-				},
-				"Tags": "[parameters('tags')]"
-			}
+				"computeId": "[parameters('computeId')]",
+				"nodeCount": "1"
+			},
+			"Tags": "[parameters('tags')]"
+		}
         }
     ],
     "outputs": {}
