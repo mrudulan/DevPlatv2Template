@@ -1,0 +1,58 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+			"type": "string",
+			"metadata": {
+				"description": "Specifies the name of the Azure Machine Learning workspace which will hold this datastore target."
+			}
+		},
+		"codejobName": {
+			"type": "string",
+			"metadata": {
+				"description": "The name of the code job."
+			}
+		},
+		"computeId": {
+			"type": "string",
+			"metadata": {
+				"description": "The compute you want this job to run on"
+			}
+		},
+		"tags": {
+			"type": "object",
+			"defaultValue": {},
+			"metadata": {
+				"description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
+			}
+		},
+		"location": {
+			"type": "string",
+			"defaultValue": "[resourceGroup().location]",
+			"metadata": {
+				"description": "The location of the Azure Machine Learning Workspace."
+			}
+		}
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/codejobs",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('codejobName'))]",
+			"apiVersion": "2020-09-01-preview",
+			"location": "westcentralus",
+			"properties": 
+			{
+				"computeBinding": 
+				{
+					"computeId": "[parameters('computeId')]",
+					"nodeCount": "1"
+				},
+				"Tags": "[parameters('tags')]"
+			}
+        }
+    ],
+    "outputs": {}
+}
