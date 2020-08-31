@@ -14,7 +14,7 @@
 			"metadata": {
 				"description": "The name of the code job."
 			},
-			"defaultValue": "test5"
+			"defaultValue": "test6"
 		},
 		"computeId": {
 			"type": "string",
