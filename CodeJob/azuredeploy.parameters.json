@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "value": "mmscentral"
+            "value": "mnarkdev1"
         },
         "codejobName": {
-            "value": "test3"
+            "value": "test2"
         },
         "computeId": {
             "value": "cpucluster"
