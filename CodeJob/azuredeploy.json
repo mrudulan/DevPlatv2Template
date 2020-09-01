@@ -7,14 +7,14 @@
 			"metadata": {
 				"description": "Specifies the name of the Azure Machine Learning workspace which will hold this datastore target."
 			},
-			"defaultValue": "mmscentral"
+			"defaultValue": "mnarkdev1"
 		},
 		"codejobName": {
 			"type": "string",
 			"metadata": {
 				"description": "The name of the code job."
 			},
-			"defaultValue": "test6"
+			"defaultValue": "test2"
 		},
 		"computeId": {
 			"type": "string",
