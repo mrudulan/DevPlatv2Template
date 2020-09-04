@@ -11,6 +11,7 @@ on:
     paths:
       - ".github/workflows/autodeploy.yml"
       - "BertLarge/Azure/azuredeploy.json"
+      - "BertLarge/Azure/azuredeploy.parameters.json"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
