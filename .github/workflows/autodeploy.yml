@@ -6,10 +6,11 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
     paths:
-      - ".github/workflows/blank.yml"
-      - "CodeJob/azuredeploy.json"
+      - ".github/workflows/autodeploy.yml"
+      - "BertLarge/Azure/azuredeploy.json"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -28,4 +29,4 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az deployment group create --resource-group mnarkdev --template-file ./CodeJob/azuredeploy.json
+            az deployment group create --resource-group mnarkdev --template-file ./BertLarge/Azure/azuredeploy.json
