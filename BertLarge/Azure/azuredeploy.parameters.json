@@ -6,9 +6,9 @@
             "value": "mnarkdev1"
         },
         "codejobName": {
-            "value": "test2"
+            "value": "test1"
         },
-        "computeId": {
+        "computeName": {
             "value": "cpucluster"
         },
         "tags": {
