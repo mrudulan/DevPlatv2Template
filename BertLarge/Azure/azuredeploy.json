@@ -131,8 +131,8 @@
                 "[parameters('storageAccountName')]"
             ],
             "sku": {
-                "tier": "basic",
-                "name": "basic"
+                "tier": "Enterprise",
+                "name": "Enterprise"
             },
             "identity": {
                 "type": "systemAssigned"
