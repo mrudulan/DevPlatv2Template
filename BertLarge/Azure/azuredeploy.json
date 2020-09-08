@@ -44,27 +44,27 @@
                 "description": "Specifies the SKU size for interactive and remote compute."
             }
         },
-		"codejobName": {
-			"type": "string",
-			"metadata": {
-				"description": "The name of the code job."
-			},
-			"defaultValue": "test1"
-		},        
-		"computeName": {
-			"type": "string",
-			"metadata": {
-				"description": "The compute you want this job to run on"
-			},
-			"defaultValue": "cpucluster"
+	"codejobName": {
+		"type": "string",
+		"metadata": {
+			"description": "The name of the code job."
 		},
-		"tags": {
-			"type": "object",
-			"defaultValue": {},
-			"metadata": {
-				"description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
-			}
+		"defaultValue": "test1"
+	},        
+	"computeName": {
+		"type": "string",
+		"metadata": {
+			"description": "The compute you want this job to run on"
+		},
+		"defaultValue": "cpucluster"
+	},
+	"tags": {
+		"type": "object",
+		"defaultValue": {},
+		"metadata": {
+			"description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
 		}
+	}
     },
     "variables": {
         "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
