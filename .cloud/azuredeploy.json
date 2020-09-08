@@ -20,7 +20,7 @@
             "defaultValue": "[concat('storagea', uniqueString(resourceGroup().id))]",
             "type": "String",
             "metadata": {
-                "description": "Specifies the name of the Azure storage account to create."
+                "description": "Specifies the name of the Azure storage account to create"
             }
         },
         "applicationInsightsName": {
