@@ -51,6 +51,13 @@
 		},
 		"defaultValue": "test1"
 	},        
+	"command": {
+		"type": "string",
+		"metadata": {
+			"description": "Start up command in code job."
+		},
+		"defaultValue": "BertLarge/Code/train.py"
+	},      
 	"computeName": {
 		"type": "string",
 		"metadata": {
