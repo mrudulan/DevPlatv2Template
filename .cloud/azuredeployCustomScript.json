@@ -44,49 +44,49 @@
                 "description": "Specifies the SKU size for interactive and remote compute."
             }
         },
-        "codejobName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the code job."
-            },
-            "defaultValue": "test1"
-        },
-        "command": {
-            "type": "string",
-            "metadata": {
-                "description": "Start up command in code job."
-            },
-            "defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/code/lightgbm/iris/train.py"
-        },
-        "saveFileToPath": {
-            "type": "string",
-            "defaultValue": "azureml/LocalUpload/Test"
-        },
-        "computeName": {
-            "type": "string",
-            "metadata": {
-                "description": "The compute you want this job to run on"
-            },
-            "defaultValue": "cpucluster"
-        },
-        "tags": {
-            "type": "object",
-            "defaultValue": {},
-            "metadata": {
-                "description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
-            }
-        },
-        "userAssignedIdentities": {
-            "type": "string",
-            "defaultValue": "/subscriptions/5f08d643-1910-4a38-a7c7-84a39d4f42e0/resourceGroups/mnarkdev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mnarkuai1"
-        },
-        "storageAccountKey": {
-            "type": "string"
-        },
-        "utcValue": {
-            "type": "string",
-            "defaultValue": "[utcNow()]"
-        }
+	"codejobName": {
+		"type": "string",
+		"metadata": {
+			"description": "The name of the code job."
+		},
+		"defaultValue": "test1"
+	},        
+	"command": {
+		"type": "string",
+		"metadata": {
+			"description": "Start up command in code job."
+		},
+		"defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/code/lightgbm/iris/train.py"
+	},
+	    "saveFileToPath": {
+		"type": "string",
+		"defaultValue": "azureml/LocalUpload/Test"	
+	    }, 
+	"computeName": {
+		"type": "string",
+		"metadata": {
+			"description": "The compute you want this job to run on"
+		},
+		"defaultValue": "cpucluster"
+	},
+	"tags": {
+		"type": "object",
+		"defaultValue": {},
+		"metadata": {
+			"description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
+		}
+	},
+    "userAssignedIdentities": {
+			"type": "string",
+			"defaultValue": "/subscriptions/5f08d643-1910-4a38-a7c7-84a39d4f42e0/resourceGroups/mnarkdev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mnarkuai1"
+		},
+    "storageAccountKey": {
+			"type": "string"
+		},
+	    "utcValue": {
+			"type": "string",
+			"defaultValue": "[utcNow()]"
+		}
     },
     "variables": {
         "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
@@ -181,51 +181,54 @@
                 }
             }
         },
-        {
-            "type": "Microsoft.Resources/deploymentScripts",
-            "apiVersion": "2019-10-01-preview",
-            "name": "UploadFileToBlob",
-            "location": "[resourceGroup().location]",
-            "kind": "AzureCLI",
-            "identity": {
-                "type": "userAssigned",
-                "userAssignedIdentities": {
-                    "[parameters('userAssignedIdentities')]": {}
-                }
-            },
-            "properties": {
-                "storageAccountSettings": {
-                    "storageAccountName": "[parameters('storageAccountName')]",
-                    "storageAccountKey": "[parameters('storageAccountKey')]"
-                },
-                "containerSettings": {
-                    "containerGroupName": null
-                },
-                "forceUpdateTag": "[parameters('utcValue')]",
-                "azCliVersion": "2.0.80",
-                "arguments": "[concat(parameters('command'), ' ', parameters('saveFileToPath'), ' ', parameters('storageAccountName'), ' ', parameters('storageAccountKey'))]",
-                "scriptContent": "wget $1; downloadfilename=$(basename $1); az storage blob upload -f $downloadfilename -c $2 --account-name $3 --account-key $4  -n $downloadfilename",
-                "timeout": "PT30M",
-                "cleanupPreference": "OnSuccess",
-                "retentionInterval": "P1D"
-            }
-        },
+		{
+			"type": "Microsoft.Resources/deploymentScripts",
+			"apiVersion": "2019-10-01-preview",
+			"name": "UploadFileToBlob",
+			"location": "[resourceGroup().location]",
+			"kind": "AzureCLI",
+			"identity": {
+				"type": "userAssigned",
+				"userAssignedIdentities": {
+					"[parameters('userAssignedIdentities')]": {}
+				}
+			},
+			"properties": {
+				"storageAccountSettings":
+				{
+					"storageAccountName": "[parameters('storageAccountName')]",
+					"storageAccountKey": "[parameters('storageAccountKey')]"
+				},
+				"containerSettings": {
+					"containerGroupName": null
+				},
+				"forceUpdateTag": "[parameters('utcValue')]",
+				"azCliVersion": "2.0.80",
+				"arguments": "[concat(parameters('command'), ' ', parameters('saveFileToPath'), ' ', parameters('storageAccountName'), ' ', parameters('storageAccountKey'))]",
+				"scriptContent": "wget $1; downloadfilename=$(basename $1); az storage blob upload -f $downloadfilename -c $2 --account-name $3 --account-key $4  -n $downloadfilename",
+				"timeout": "PT30M",
+				"cleanupPreference": "OnSuccess",
+				"retentionInterval": "P1D"
+			}
+		},
         {
             "type": "Microsoft.MachineLearningServices/workspaces/codejobs",
             "name": "[concat(parameters('workspaceName'), '/', parameters('codejobName'))]",
-            "apiVersion": "2020-09-01-preview",
-            "location": "[parameters('location')]",
+			"apiVersion": "2020-09-01-preview",
+			"location": "[parameters('location')]",
             "dependsOn": [
                 "[parameters('workspaceName')]",
                 "[parameters('computeName')]"
             ],
-            "properties": {
-                "computeBinding": {
-                    "computeId": "[parameters('computeName')]",
-                    "nodeCount": "1"
-                },
-                "Tags": "[parameters('tags')]"
-            }
+			"properties": 
+			{
+				"computeBinding": 
+				{
+					"computeId": "[parameters('computeName')]",
+					"nodeCount": "1"
+				},
+				"Tags": "[parameters('tags')]"
+			}
         }
     ]
 }
