@@ -224,6 +224,9 @@
                     "computeId": "[parameters('computeName')]",
                     "nodeCount": "1"
                 },
+                "CodeConfiguration": {
+                    "Command": "['helloWorldTrainScript.py']"
+                },
                 "Tags": "[parameters('tags')]"
             }
         }
