@@ -28,7 +28,7 @@ Our primary documentation is at https://lightgbm.readthedocs.io/ and is generate
 
 Learn how Azure Machine Learning can help you streamline the building, training, and deployment of machine learning models. Start free today.
 
-## Getting Started
+# Getting Started
 
 
 ### LightGBM training
