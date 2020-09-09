@@ -86,6 +86,10 @@
         "utcValue": {
             "type": "string",
             "defaultValue": "[utcNow()]"
+        },
+        "codeConfigCommand": {
+            "type": "array",
+            "defaultValue": ["helloWorldTrainScript"]
         }
     },
     "variables": {
@@ -225,7 +229,7 @@
                     "nodeCount": "1"
                 },
                 "CodeConfiguration": {
-                    "Command": "['helloWorldTrainScript.py']"
+                    "Command": "[parameters('codeConfigCommand')]"
                 },
                 "Tags": "[parameters('tags')]"
             }
