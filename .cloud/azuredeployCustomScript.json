@@ -185,7 +185,7 @@
             "type": "Microsoft.Resources/deploymentScripts",
             "apiVersion": "2019-10-01-preview",
             "name": "UploadFileToBlob",
-            "location": "[resourceGroup().location]",
+            "location": "westus",
             "kind": "AzureCLI",
             "identity": {
                 "type": "userAssigned",
