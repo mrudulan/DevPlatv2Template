@@ -45,6 +45,7 @@
             }
         },
         "codejobName": {
+            "defaultValue": "codejob1",
             "type": "string",
             "metadata": {
                 "description": "The name of the code job."
