@@ -86,7 +86,7 @@
         "utcValue": {
             "type": "string",
             "defaultValue": "[utcNow()]"
-        },
+        }
     },
     "variables": {
         "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
