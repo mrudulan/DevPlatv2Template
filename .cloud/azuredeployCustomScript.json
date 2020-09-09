@@ -185,7 +185,7 @@
             "type": "Microsoft.Resources/deploymentScripts",
             "apiVersion": "2019-10-01-preview",
             "name": "UploadFileToBlob",
-            "location": "westus",
+            "location": "eastus",
             "kind": "AzureCLI",
             "identity": {
                 "type": "userAssigned",
@@ -227,5 +227,11 @@
                 "Tags": "[parameters('tags')]"
             }
         }
-    ]
+    ],
+    "outputs": {
+		"result": {
+		"value": "[reference('UploadFileToBlob')]",
+		"type": "object"
+		}
+	}
 }
