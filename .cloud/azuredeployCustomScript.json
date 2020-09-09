@@ -48,8 +48,7 @@
             "type": "string",
             "metadata": {
                 "description": "The name of the code job."
-            },
-            "defaultValue": "test1"
+            }
         },
         "command": {
             "type": "string",
@@ -89,7 +88,7 @@
         "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
         "applicationInsights": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
-        "codeConfigCommand": ["helloWorldTrainScript"]
+        "codeConfigCommand": [ "helloWorldTrainScript" ]
     },
     "resources": [
         {
@@ -197,8 +196,8 @@
                 },
                 "forceUpdateTag": "[parameters('utcValue')]",
                 "azCliVersion": "2.0.80",
-			    "arguments": "[concat(parameters('command'), ' ', parameters('saveFileToPath'), ' ', parameters('storageAccountName'))]",
-				"scriptContent": "wget $1; downloadfilename=$(basename $1); az storage blob upload -f $downloadfilename -c $2 --account-name $3 -n $downloadfilename",
+                "arguments": "[concat(parameters('command'), ' ', parameters('saveFileToPath'), ' ', parameters('storageAccountName'))]",
+                "scriptContent": "wget $1; downloadfilename=$(basename $1); az storage blob upload -f $downloadfilename -c $2 --account-name $3 -n $downloadfilename",
                 "timeout": "PT30M",
                 "cleanupPreference": "OnSuccess",
                 "retentionInterval": "P1D"
@@ -218,17 +217,14 @@
                     "computeId": "[parameters('computeName')]",
                     "nodeCount": "1"
                 },
-                "CodeConfiguration": {
-                    "Command": "[variables('codeConfigCommand')]"
-                },
                 "Tags": "[parameters('tags')]"
             }
         }
     ],
     "outputs": {
-		"result": {
-		"value": "[reference('UploadToBlob')]",
-		"type": "object"
-		}
-	}
+        "result": {
+            "value": "[reference('UploadToBlob')]",
+            "type": "object"
+        }
+    }
 }

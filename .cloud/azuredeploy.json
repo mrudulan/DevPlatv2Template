@@ -48,8 +48,7 @@
             "type": "string",
             "metadata": {
                 "description": "The name of the code job."
-            },
-            "defaultValue": "test1"
+            }
         },
         "command": {
             "type": "string",
@@ -180,9 +179,6 @@
                 "computeBinding": {
                     "computeId": "[parameters('computeName')]",
                     "nodeCount": "1"
-                },
-                "CodeConfiguration": {
-                    "Command": "[variables('codeConfigCommand')]"
                 },
                 "Tags": "[parameters('tags')]"
             }
