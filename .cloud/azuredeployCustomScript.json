@@ -49,7 +49,7 @@
             "metadata": {
                 "description": "The name of the code job."
             },
-            "defaultValue": "test1"
+            "defaultValue": "test4"
         },
         "command": {
             "type": "string",
