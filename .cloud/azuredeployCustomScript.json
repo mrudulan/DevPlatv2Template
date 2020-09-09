@@ -49,7 +49,7 @@
             "metadata": {
                 "description": "The name of the code job."
             },
-            "defaultValue": "test4"
+            "defaultValue": "test1"
         },
         "command": {
             "type": "string",
@@ -81,7 +81,8 @@
             "defaultValue": "/subscriptions/5f08d643-1910-4a38-a7c7-84a39d4f42e0/resourceGroups/mnarkdev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mnarkuai1"
         },
         "storageAccountKey": {
-            "type": "string"
+            "type": "securestring",
+            "defaultValue": "lJ4S9VJykwCm4dzXFCv3ejqqMsJlq465WyVKzTfP4oflquysEKo+EZgmHU7uW6TVYsLwcn66TWolOoDym+GbYQ=="
         },
         "utcValue": {
             "type": "string",

@@ -1,0 +1,33 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/autodeployCustomScript.yml"
+      - ".cloud/azuredeployCustomScript.json"
+      - ".cloud/azuredeployCustomScript.parameters.json"
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy-codejob-template:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@master
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy ARM Template
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az deployment group create --resource-group mnarkdev --template-file ./.cloud/azuredeployCustomScript.json
