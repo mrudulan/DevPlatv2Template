@@ -2,13 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "rgName": {
-            "defaultValue": "mnarkdev",
-            "type": "String",
-            "metadata": {
-                "description": "Specifies the name of the Azure Resource Group."
-            }
-        },
         "workspaceName": {
             "defaultValue": "mnarkdev1",
             "type": "String",
@@ -96,22 +89,11 @@
         }
     },
     "variables": {
-        "resourceGroup": "[resourceId('Microsoft.Resources/resourceGroups', parameters('rgName'))]",
         "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
         "applicationInsights": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]"
     },
     "resources": [
-        {
-            "type": "Microsoft.Resources/resourceGroups",
-            "apiVersion": "2019-10-01",
-            "name": "[parameters('rgName')]",
-            "location": "[parameters('location')]",
-            "tags": {
-                "Note": "subscription level deployment"
-            },
-            "properties": {}
-        },
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
@@ -134,10 +116,7 @@
                     "keySource": "Microsoft.Storage"
                 },
                 "supportsHttpsTrafficOnly": true
-            },
-            "dependsOn": [
-                "[parameters('rgName')]"
-            ]
+            }
         },
         {
             "type": "Microsoft.KeyVault/vaults",
@@ -151,10 +130,7 @@
                     "family": "A"
                 },
                 "accessPolicies": []
-            },
-            "dependsOn": [
-                "[parameters('rgName')]"
-            ]
+            }
         },
         {
             "type": "Microsoft.Insights/components",
@@ -164,10 +140,7 @@
             "kind": "web",
             "properties": {
                 "Application_Type": "web"
-            },
-            "dependsOn": [
-                "[parameters('rgName')]"
-            ]
+            }
         },
         {
             "type": "Microsoft.MachineLearningServices/workspaces",
@@ -175,7 +148,6 @@
             "name": "[parameters('workspaceName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[parameters('rgName')]",
                 "[parameters('applicationInsightsName')]",
                 "[parameters('keyVaultName')]",
                 "[parameters('storageAccountName')]"
