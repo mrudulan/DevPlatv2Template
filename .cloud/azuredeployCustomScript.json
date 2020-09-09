@@ -87,16 +87,13 @@
         "utcValue": {
             "type": "string",
             "defaultValue": "[utcNow()]"
-        },
-        "codeConfigCommand": {
-            "type": "array",
-            "defaultValue": ["helloWorldTrainScript"]
         }
     },
     "variables": {
         "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
-        "applicationInsights": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]"
+        "applicationInsights": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
+        "codeConfigCommand": ["helloWorldTrainScript"]
     },
     "resources": [
         {
@@ -230,7 +227,7 @@
                     "nodeCount": "1"
                 },
                 "CodeConfiguration": {
-                    "Command": "[parameters('codeConfigCommand')]"
+                    "Command": "[variables('codeConfigCommand')]"
                 },
                 "Tags": "[parameters('tags')]"
             }

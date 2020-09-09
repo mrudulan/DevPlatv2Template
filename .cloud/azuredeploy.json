@@ -44,39 +44,40 @@
                 "description": "Specifies the SKU size for interactive and remote compute."
             }
         },
-	"codejobName": {
-		"type": "string",
-		"metadata": {
-			"description": "The name of the code job."
-		},
-		"defaultValue": "test1"
-	},        
-	"command": {
-		"type": "string",
-		"metadata": {
-			"description": "Start up command in code job."
-		},
-		"defaultValue": "BertLarge/Code/train.py"
-	},      
-	"computeName": {
-		"type": "string",
-		"metadata": {
-			"description": "The compute you want this job to run on"
-		},
-		"defaultValue": "cpucluster"
-	},
-	"tags": {
-		"type": "object",
-		"defaultValue": {},
-		"metadata": {
-			"description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
-		}
-	}
+        "codejobName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the code job."
+            },
+            "defaultValue": "test1"
+        },
+        "command": {
+            "type": "string",
+            "metadata": {
+                "description": "Start up command in code job."
+            },
+            "defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/code/lightgbm/iris/train.py"
+        },
+        "computeName": {
+            "type": "string",
+            "metadata": {
+                "description": "The compute you want this job to run on"
+            },
+            "defaultValue": "cpucluster"
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {},
+            "metadata": {
+                "description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
+            }
+        }
     },
     "variables": {
         "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
-        "applicationInsights": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]"
+        "applicationInsights": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
+        "codeConfigCommand": ["helloWorldTrainScript"]
     },
     "resources": [
         {
@@ -169,21 +170,22 @@
         {
             "type": "Microsoft.MachineLearningServices/workspaces/codejobs",
             "name": "[concat(parameters('workspaceName'), '/', parameters('codejobName'))]",
-			"apiVersion": "2020-09-01-preview",
-			"location": "[parameters('location')]",
+            "apiVersion": "2020-09-01-preview",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[parameters('workspaceName')]",
                 "[parameters('computeName')]"
             ],
-			"properties": 
-			{
-				"computeBinding": 
-				{
-					"computeId": "[parameters('computeName')]",
-					"nodeCount": "1"
-				},
-				"Tags": "[parameters('tags')]"
-			}
+            "properties": {
+                "computeBinding": {
+                    "computeId": "[parameters('computeName')]",
+                    "nodeCount": "1"
+                },
+                "CodeConfiguration": {
+                    "Command": "[variables('codeConfigCommand')]"
+                },
+                "Tags": "[parameters('tags')]"
+            }
         }
     ]
 }
