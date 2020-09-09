@@ -184,7 +184,7 @@
         {
             "type": "Microsoft.Resources/deploymentScripts",
             "apiVersion": "2019-10-01-preview",
-            "name": "UploadFileToBlob1",
+            "name": "UploadToBlob",
             "location": "eastus",
             "kind": "AzureCLI",
             "identity": {
@@ -230,7 +230,7 @@
     ],
     "outputs": {
 		"result": {
-		"value": "[reference('UploadFileToBlob1')]",
+		"value": "[reference('UploadToBlob')]",
 		"type": "object"
 		}
 	}
