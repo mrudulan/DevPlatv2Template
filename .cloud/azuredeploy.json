@@ -46,28 +46,37 @@
         },
         "codejobName": {
             "defaultValue": "codejob1",
-            "type": "string",
+            "type": "String",
             "metadata": {
                 "description": "The name of the code job."
             }
         },
+        "experimentName": {
+            "defaultValue": "Default",
+            "type": "String",
+            "metadata": {
+                "description": "The name of the experiment in which to create the codejob."
+            }
+        },
         "command": {
-            "type": "string",
+            "defaultValue": [
+                "helloWorldTrainScript.py"
+            ],
+            "type": "Array",
             "metadata": {
                 "description": "Start up command in code job."
-            },
-            "defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/code/lightgbm/iris/train.py"
+            }
         },
         "computeName": {
-            "type": "string",
+            "defaultValue": "cpu-cluster",
+            "type": "String",
             "metadata": {
                 "description": "The compute you want this job to run on"
-            },
-            "defaultValue": "cpucluster"
+            }
         },
         "tags": {
-            "type": "object",
             "defaultValue": {},
+            "type": "Object",
             "metadata": {
                 "description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
             }
@@ -76,8 +85,7 @@
     "variables": {
         "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
-        "applicationInsights": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
-        "codeConfigCommand": ["helloWorldTrainScript"]
+        "applicationInsights": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]"
     },
     "resources": [
         {
@@ -161,7 +169,7 @@
                 "[parameters('workspaceName')]"
             ],
             "properties": {
-                "computeType": "ComputeInstance",
+                "computeType": "AmlCompute",
                 "properties": {
                     "vmSize": "[parameters('vmSize')]"
                 }
@@ -169,14 +177,18 @@
         },
         {
             "type": "Microsoft.MachineLearningServices/workspaces/codejobs",
-            "name": "[concat(parameters('workspaceName'), '/', parameters('codejobName'))]",
             "apiVersion": "2020-09-01-preview",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('codejobName'))]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[parameters('workspaceName')]",
                 "[parameters('computeName')]"
             ],
             "properties": {
+                "experimentName": "[parameters('experimentName')]",
+                "codeConfiguration": {
+                    "Command": "[parameters('command')]"
+                },
                 "computeBinding": {
                     "computeId": "[parameters('computeName')]",
                     "nodeCount": "1"
