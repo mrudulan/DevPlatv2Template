@@ -44,6 +44,20 @@
                 "description": "Specifies the SKU size for interactive and remote compute."
             }
         },
+        "minNodeCount": {
+            "defaultValue": 0,
+            "type": "int",
+            "metadata": {
+                "description": "The minimum number of nodes to use on the cluster. If not specified, defaults to 0"
+            }
+        },        
+        "maxNodeCount": {
+            "defaultValue": 1,
+            "type": "int",
+            "metadata": {
+                "description": " The maximum number of nodes to use on the cluster. If not specified, defaults to 4."
+            }
+        },
         "codejobName": {
             "defaultValue": "codejob1",
             "type": "String",
@@ -171,7 +185,12 @@
             "properties": {
                 "computeType": "AmlCompute",
                 "properties": {
-                    "vmSize": "[parameters('vmSize')]"
+                    "vmSize": "[parameters('vmSize')]",
+                    "scaleSettings":
+                    {
+                        "minNodeCount" : "[parameters('minNodeCount')]",
+                        "maxNodeCount" : "[parameters('maxNodeCount')]"
+                    }
                 }
             }
         },
