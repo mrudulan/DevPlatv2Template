@@ -44,10 +44,34 @@
                 "description": "Specifies the SKU size for interactive and remote compute."
             }
         },
+        "minNodeCount": {
+            "defaultValue": 0,
+            "type": "int",
+            "metadata": {
+                "description": "The minimum number of nodes to use on the cluster. If not specified, defaults to 0"
+            }
+        },
+        "maxNodeCount": {
+            "defaultValue": 1,
+            "type": "int",
+            "metadata": {
+                "description": " The maximum number of nodes to use on the cluster. If not specified, defaults to 4."
+            }
+        },
         "codejobName": {
+            "defaultValue": "autotest2",
             "type": "string",
             "metadata": {
                 "description": "The name of the code job."
+            }
+        },
+        "codeConfigCommand": {
+            "defaultValue": [
+                "helloWorldTrainScript.py"
+            ],
+            "type": "Array",
+            "metadata": {
+                "description": "Start up command in code job."
             }
         },
         "command": {
@@ -88,7 +112,6 @@
         "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
         "applicationInsights": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
-        "codeConfigCommand": [ "helloWorldTrainScript" ]
     },
     "resources": [
         {
@@ -172,9 +195,13 @@
                 "[parameters('workspaceName')]"
             ],
             "properties": {
-                "computeType": "ComputeInstance",
+                "computeType": "AmlCompute",
                 "properties": {
-                    "vmSize": "[parameters('vmSize')]"
+                    "vmSize": "[parameters('vmSize')]",
+                    "scaleSettings": {
+                        "minNodeCount": "[parameters('minNodeCount')]",
+                        "maxNodeCount": "[parameters('maxNodeCount')]"
+                    }
                 }
             }
         },
@@ -216,6 +243,9 @@
                 "computeBinding": {
                     "computeId": "[parameters('computeName')]",
                     "nodeCount": "1"
+                },
+                "codeConfiguration": {
+                    "Command": "[parameters('codeConfigCommand')]"
                 },
                 "Tags": "[parameters('tags')]"
             }
