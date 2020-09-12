@@ -16,9 +16,6 @@
         },
         "location": {
             "value": "centraluseuap"
-        },
-        "storageAccountKey": {
-            "value": ""
         }
     }
 }
