@@ -52,7 +52,7 @@
             }
         },
         "maxNodeCount": {
-            "defaultValue": 1,
+            "defaultValue": 4,
             "type": "int",
             "metadata": {
                 "description": " The maximum number of nodes to use on the cluster. If not specified, defaults to 4."
@@ -82,14 +82,14 @@
             "defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/code/lightgbm/iris/train.py"
         },
         "workerCount": {
-            "defaultValue": 1,
+            "defaultValue": 2,
             "type": "int",
             "metadata": {
                 "description": "The number of workers for distributed training."
             }
         },
         "parameterServerCount": {
-            "defaultValue": 2,
+            "defaultValue": 1,
             "type": "int",
             "metadata": {
                 "description": "The parameter server count for distributed training."
