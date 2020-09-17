@@ -52,7 +52,7 @@
             }
         },
         "maxNodeCount": {
-            "defaultValue": 1,
+            "defaultValue": 4,
             "type": "int",
             "metadata": {
                 "description": " The maximum number of nodes to use on the cluster. If not specified, defaults to 4."
@@ -67,7 +67,7 @@
         },
         "codeConfigCommand": {
             "defaultValue": [
-                "helloWorldTrainScript.py"
+                "tensorflow.py"
             ],
             "type": "Array",
             "metadata": {
@@ -80,6 +80,20 @@
                 "description": "Start up command in code job."
             },
             "defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/code/lightgbm/iris/train.py"
+        },
+        "workerCount": {
+            "defaultValue": 2,
+            "type": "int",
+            "metadata": {
+                "description": "The number of workers for distributed training."
+            }
+        },
+        "parameterServerCount": {
+            "defaultValue": 1,
+            "type": "int",
+            "metadata": {
+                "description": "The parameter server count for distributed training."
+            }
         },
         "saveFileToPath": {
             "type": "string",
@@ -247,7 +261,12 @@
                 "codeConfiguration": {
                     "Command": "[parameters('codeConfigCommand')]"
                 },
-                "Tags": "[parameters('tags')]"
+                "Tags": "[parameters('tags')]",
+                "DistributionConfiguration": {
+                    "DistributionType": "Tensorflow",
+                        "WorkerCount": "[parameters('workerCount')]",
+                        "ParameterServerCount": "[parameters('parameterServerCount')]"
+                }
             }
         }
     ],
