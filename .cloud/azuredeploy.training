@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+        "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
@@ -44,10 +44,34 @@
                 "description": "Specifies the SKU size for interactive and remote compute."
             }
         },
+        "minNodeCount": {
+            "defaultValue": 0,
+            "type": "int",
+            "metadata": {
+                "description": "The minimum number of nodes to use on the cluster. If not specified, defaults to 0"
+            }
+        },
+        "maxNodeCount": {
+            "defaultValue": 4,
+            "type": "int",
+            "metadata": {
+                "description": " The maximum number of nodes to use on the cluster. If not specified, defaults to 4."
+            }
+        },
         "codejobName": {
+            "defaultValue": "autotest2",
             "type": "string",
             "metadata": {
                 "description": "The name of the code job."
+            }
+        },
+        "codeConfigCommand": {
+            "defaultValue": [
+                "tensorflow.py"
+            ],
+            "type": "Array",
+            "metadata": {
+                "description": "Start up command in code job."
             }
         },
         "command": {
@@ -56,6 +80,20 @@
                 "description": "Start up command in code job."
             },
             "defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/code/lightgbm/iris/train.py"
+        },
+        "workerCount": {
+            "defaultValue": 2,
+            "type": "int",
+            "metadata": {
+                "description": "The number of workers for distributed training."
+            }
+        },
+        "parameterServerCount": {
+            "defaultValue": 1,
+            "type": "int",
+            "metadata": {
+                "description": "The parameter server count for distributed training."
+            }
         },
         "saveFileToPath": {
             "type": "string",
@@ -88,10 +126,9 @@
         "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "keyVault": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
         "applicationInsights": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
-        "codeConfigCommand": [ "train.py" ],
-        "CodeArtifactId": "[resourceId('Microsoft.MachineLearningServices/workspaces/Code', parameters('codeName'))]",
-        "envId": "[resourceId('Microsoft.MachineLearningServices/workspaces/Environment', parameters('envName'))]",
-        "dataId": "[resourceId('Microsoft.MachineLearningServices/workspaces/Data', parameters('dataName'))]"
+        "environmentId": "[resourceId('Microsoft.MachineLearningServices/workspaces/Environment', parameters('envName'))]",
+        "dataId": "[resourceId('Microsoft.MachineLearningServices/workspaces/Data', parameters('dataName'))]",
+        "CodeArtifactId": "[resourceId('Microsoft.MachineLearningServices/workspaces/Code', parameters('codeConfigCommand'))]"
     },
     "resources": [
         {
@@ -175,9 +212,13 @@
                 "[parameters('workspaceName')]"
             ],
             "properties": {
-                "computeType": "ComputeInstance",
+                "computeType": "AmlCompute",
                 "properties": {
-                    "vmSize": "[parameters('vmSize')]"
+                    "vmSize": "[parameters('vmSize')]",
+                    "scaleSettings": {
+                        "minNodeCount": "[parameters('minNodeCount')]",
+                        "maxNodeCount": "[parameters('maxNodeCount')]"
+                    }
                 }
             }
         },
@@ -220,17 +261,22 @@
                     "computeId": "[parameters('computeName')]",
                     "nodeCount": "1"
                 },
-                "CodeConfiguration": {
-                    "Command" : "[variables('codeConfigCommand')]",
+                "codeConfiguration": {
+                    "Command": "[parameters('codeConfigCommand')]",
                     "CodeArtifactId" : "[variables('CodeArtifactId')]"
                 },
                 "EnvironmentConfiguration": {
-                    "EnvironmentId" : "[variables('envId')]"
+                    "EnvironmentId" : "[variables('environmentId')]"
                 },
                 "DataBinding": {
                     "DataId" : "[variables('dataId')]"
                 },
-                "Tags": "[parameters('tags')]"
+                "Tags": "[parameters('tags')]",
+                "DistributionConfiguration": {
+                    "DistributionType": "Tensorflow",
+                        "WorkerCount": "[parameters('workerCount')]",
+                        "ParameterServerCount": "[parameters('parameterServerCount')]"
+                }
             }
         }
     ],
