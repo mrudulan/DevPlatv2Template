@@ -269,7 +269,11 @@
                     "EnvironmentId" : "[variables('environmentId')]"
                 },
                 "DataBinding": {
-                    "DataId" : "[variables('dataId')]"
+                        "irisBinding" : {
+                            "sourceDataReference" : "[variables('dataId')]",
+                            "localReference" : "data/",
+                            "Mode" : "Mount"
+                        }
                 },
                 "Tags": "[parameters('tags')]",
                 "DistributionConfiguration": {
