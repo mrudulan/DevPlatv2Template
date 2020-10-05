@@ -265,9 +265,7 @@
                     "Command": "[parameters('codeConfigCommand')]",
                     "CodeArtifactId" : "[variables('CodeArtifactId')]"
                 },
-                "EnvironmentConfiguration": {
-                    "EnvironmentId" : "[variables('environmentId')]"
-                },
+                "EnvironmentId" : "[variables('environmentId')]"
                 "DataBinding": {
                         "irisBinding" : {
                             "sourceDataReference" : "[variables('dataId')]",
