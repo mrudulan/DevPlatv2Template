@@ -74,15 +74,14 @@
         },
         "trainingScriptBlobContainer": {
             "type": "string",
-            "defaultValue": "localuploads"
+            "defaultValue": "azureml",
+            "metadata": {
+                "description": "The blob container that will hold the training script. For now, this must be 'azureml'."
+            }
         },
         "trainingScriptBlobPathInContainer": {
             "type": "string",
             "defaultValue": "test"
-        },
-        "datastoreName": {
-            "type": "string",
-            "defaultValue": "localUploadsDatastore"
         },
         "codeAssetName": {
             "type": "string",
@@ -138,8 +137,6 @@
         "storageAccountResourceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "keyVaultResourceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
         "appInsightsResourceId": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
-        "workspaceResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
-        "datastoreResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores', parameters('workspaceName'), parameters('datastoreName'))]",
         "codeVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/codes/versions', parameters('workspaceName'), parameters('codeAssetName'), '1')]"
     },
     "resources": [
@@ -243,33 +240,6 @@
             ]
         },
         {
-            "type": "Microsoft.MachineLearningServices/workspaces/datastores",
-            "name": "[concat(parameters('workspaceName'), '/', parameters('datastoreName'))]",
-            "apiVersion": "2020-09-01-preview",
-            "dependsOn": [
-                "[parameters('workspaceName')]",
-                "[parameters('storageAccountName')]",
-                "[parameters('trainingScriptBlobContainer')]"
-            ],
-            "properties": {
-                "contents": {
-                    "type": "AzureBlob",
-                    "AzureStorage": {
-                        "accountName": "[parameters('storageAccountName')]",
-                        "containerName": "[parameters('trainingScriptBlobContainer')]",
-                        "credentials": {
-                            "type": "AccountKey",
-                            "accountKey": {
-                                "key": "[listKeys(variables('workspaceResourceId'), '2020-09-01-preview').userStorageKey]"
-                            }
-                        },
-                        "endpoint": "core.windows.net",
-                        "protocol": "https"
-                    }
-                }
-            }
-        },
-        {
             "type": "Microsoft.Resources/deploymentScripts",
             "apiVersion": "2019-10-01-preview",
             "name": "UploadToBlob",
@@ -307,7 +277,6 @@
                 "UploadToBlob"
             ],
             "properties": {
-                "datastoreId": "[variables('datastoreResourceId')]",
                 "assetPaths": [
                     {
                         "path": "[parameters('trainingScriptBlobPathInContainer')]",
