@@ -9,9 +9,9 @@ on:
     branches:
       - master
     paths:
-      - ".github/workflows/autodeployCustomScript.yml"
-      - ".cloud/azuredeployCustomScript.json"
-      - ".cloud/azuredeployCustomScript.parameters.json"
+      - ".github/workflows/autodeployCommandJob.yml"
+      - ".cloud/azuredeployCommandJob.json"
+      - ".cloud/azuredeployCommandJob.parameters.json"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -30,4 +30,4 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az deployment group create --resource-group mnarkdev --template-file ./.cloud/azuredeployCustomScript.json
+            az deployment group create --resource-group mnarkdev --template-file ./.cloud/azuredeployCommandJob.json
