@@ -3,7 +3,6 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "defaultValue": "jenns-local",
             "type": "String",
             "metadata": {
                 "description": "Specifies the name of the Azure Machine Learning workspace."
@@ -92,7 +91,6 @@
         },
         "jobName": {
             "type": "string",
-            "defaultValue": "command_1"
         },
         "jobCommand": {
             "defaultValue": [
