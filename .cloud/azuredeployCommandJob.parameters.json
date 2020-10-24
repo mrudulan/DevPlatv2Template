@@ -5,8 +5,8 @@
         "workspaceName": {
             "value": "mnarkdev1"
         },
-        "codejobName": {
-            "value": "codejob1"
+        "JobName": {
+            "value": "test_1"
         },
         "computeName": {
             "value": "cpucluster"
