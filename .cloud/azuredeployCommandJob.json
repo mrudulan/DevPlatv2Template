@@ -90,7 +90,10 @@
             }
         },
         "jobName": {
-            "type": "string"
+            "type": "string",
+            "metadata": {
+                "description": "Name of job."
+            }
         },
         "jobCommand": {
             "defaultValue": [
