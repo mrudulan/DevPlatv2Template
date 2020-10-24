@@ -90,7 +90,7 @@
             }
         },
         "jobName": {
-            "type": "string",
+            "type": "string"
         },
         "jobCommand": {
             "defaultValue": [
