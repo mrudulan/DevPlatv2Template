@@ -6,7 +6,8 @@
             "type": "String",
             "metadata": {
                 "description": "Specifies the name of the Azure Machine Learning workspace."
-            }
+            },
+            "defaultValue": "mnarkdev1"
         },
         "keyVaultName": {
             "defaultValue": "[concat('kva', uniqueString(parameters('workspaceName')))]",
@@ -93,7 +94,8 @@
             "type": "string",
             "metadata": {
                 "description": "Name of job."
-            }
+            },
+            "defaultValue": "command_2"
         },
         "jobCommand": {
             "defaultValue": [
