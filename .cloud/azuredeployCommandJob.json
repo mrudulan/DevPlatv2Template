@@ -6,7 +6,8 @@
             "type": "String",
             "metadata": {
                 "description": "Specifies the name of the Azure Machine Learning workspace."
-            }
+            },
+            "defaultValue": "mnarkdev2"
         },
         "keyVaultName": {
             "defaultValue": "[concat('kva', uniqueString(parameters('workspaceName')))]",
@@ -97,7 +98,8 @@
             "type": "string",
             "metadata": {
                 "description": "Name of job."
-            }
+            },
+            "defaultValue": "command1"
         },
         "jobCuratedEnvironmentName": {
             "type": "string",
@@ -346,7 +348,7 @@
             ],
             "properties": {
                 "jobType": "Command",
-                "environmentId": "[concat('/subscriptions/', subscription(), '/resourceGroups/', resourceGroup(), '/providers/Microsoft.MachineLearningServices/Environments/', parameters('jobCuratedEnvironmentName'))]",
+                "environmentId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.MachineLearningServices/Environments/', parameters('jobCuratedEnvironmentName'))]",
                 "computeBinding": {
                     "computeId": "[parameters('computeName')]",
                     "nodeCount": "1"
