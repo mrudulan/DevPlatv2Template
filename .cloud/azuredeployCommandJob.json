@@ -6,8 +6,7 @@
             "type": "String",
             "metadata": {
                 "description": "Specifies the name of the Azure Machine Learning workspace."
-            },
-            "defaultValue": "mnarkdev1"
+            }
         },
         "keyVaultName": {
             "defaultValue": "[concat('kva', uniqueString(parameters('workspaceName')))]",
@@ -74,12 +73,16 @@
         },
         "trainingScriptBlobContainer": {
             "type": "string",
-            "defaultValue": "azureml",
+            "defaultValue": "localuploads",
             "metadata": {
-                "description": "The blob container that will hold the training script. For now, this must be 'azureml'."
+                "description": "The blob container that will hold the training script."
             }
         },
         "trainingScriptBlobPathInContainer": {
+            "type": "string",
+            "defaultValue": "test"
+        },
+        "datastoreName": {
             "type": "string",
             "defaultValue": "test"
         },
@@ -94,8 +97,11 @@
             "type": "string",
             "metadata": {
                 "description": "Name of job."
-            },
-            "defaultValue": "command_2"
+            }
+        },
+        "jobCuratedEnvironmentName": {
+            "type": "string",
+            "defaultValue": "AzureML-Minimal"
         },
         "jobCommand": {
             "defaultValue": [
@@ -127,6 +133,10 @@
                 "description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
             }
         },
+        "uploadToBlobDeploymentScriptName": {
+            "type": "string",
+            "defaultValue": "UploadToBlob1"
+        },
         "userAssignedIdentities": {
             "type": "string",
             "defaultValue": "/subscriptions/5f08d643-1910-4a38-a7c7-84a39d4f42e0/resourceGroups/mnarkdev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mnarkuai1"
@@ -140,7 +150,9 @@
         "storageAccountResourceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "keyVaultResourceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
         "appInsightsResourceId": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
-        "codeVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/codes/versions', parameters('workspaceName'), parameters('codeAssetName'), '1')]"
+        "codeVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/codes/versions', parameters('workspaceName'), parameters('codeAssetName'), '1')]",
+        "workspaceResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
+        "datastoreResourceID": "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores', parameters('workspaceName'), parameters('datastoreName'))]"
     },
     "resources": [
         {
@@ -245,7 +257,7 @@
         {
             "type": "Microsoft.Resources/deploymentScripts",
             "apiVersion": "2019-10-01-preview",
-            "name": "UploadToBlob",
+            "name": "[parameters('uploadToBlobDeploymentScriptName')]",
             "location": "eastus",
             "dependsOn": [
                 "[parameters('storageAccountName')]",
@@ -263,12 +275,44 @@
                     "containerGroupName": null
                 },
                 "forceUpdateTag": "[parameters('utcValue')]",
-                "azCliVersion": "2.0.80",
+                "azCliVersion": "2.13.0",
                 "arguments": "[concat(parameters('trainingScriptForUpload'), ' ', parameters('trainingScriptBlobContainer'), ' ', parameters('trainingScriptBlobPathInContainer'), ' ', parameters('storageAccountName'))]",
                 "scriptContent": "wget $1; downloadfilename=$(basename $1); az storage blob upload -f $downloadfilename -c $2/$3 --account-name $4 -n $downloadfilename",
                 "timeout": "PT30M",
                 "cleanupPreference": "OnSuccess",
-                "retentionInterval": "P1D"
+                "retentionInterval": "P1D",
+                "environmentVariables": [
+                    {
+                        "name": "AZURE_STORAGE_KEY",
+                        "secureValue": "[listKeys(variables('workspaceResourceId'), '2020-09-01-preview').userStorageKey]"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/datastores",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('datastoreName'))]",
+            "apiVersion": "2020-09-01-preview",
+            "dependsOn": [
+                "[parameters('workspaceName')]",
+                "[parameters('uploadToBlobDeploymentScriptName')]"
+            ],
+            "properties": {
+                "contents": {
+                    "type": "AzureBlob",
+                    "AzureStorage": {
+                        "AccountName": "[parameters('storageAccountName')]",
+                        "ContainerName": "[parameters('trainingScriptBlobContainer')]",
+                        "Credentials": {
+                            "type": "AccountKey",
+                            "accountKey": {
+                                "key": "[listKeys(variables('workspaceResourceId'), '2020-09-01-preview').userStorageKey]"
+                            }
+                        },
+                        "Endpoint": "core.windows.net",
+                        "Protocol": "https"
+                    }
+                }
             }
         },
         {
@@ -277,9 +321,11 @@
             "apiVersion": "2020-09-01-preview",
             "dependsOn": [
                 "[parameters('workspaceName')]",
-                "UploadToBlob"
+                "[parameters('uploadToBlobDeploymentScriptName')]",
+                "[parameters('datastoreName')]"
             ],
             "properties": {
+                "datastoreId": "[variables('datastoreResourceID')]",
                 "assetPaths": [
                     {
                         "path": "[parameters('trainingScriptBlobPathInContainer')]",
@@ -300,6 +346,7 @@
             ],
             "properties": {
                 "jobType": "Command",
+                "environmentId": "[concat('/subscriptions/', subscription(), '/resourceGroups/', resourceGroup(), '/providers/Microsoft.MachineLearningServices/Environments/', parameters('jobCuratedEnvironmentName'))]",
                 "computeBinding": {
                     "computeId": "[parameters('computeName')]",
                     "nodeCount": "1"
@@ -319,7 +366,7 @@
     ],
     "outputs": {
         "result": {
-            "value": "[reference('UploadToBlob')]",
+            "value": "[reference(parameters('uploadToBlobDeploymentScriptName'))]",
             "type": "object"
         }
     }
