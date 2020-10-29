@@ -1,0 +1,68 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure Machine Learning workspace."
+            },
+            "defaultValue": "mnarkdev2"
+        },
+        "storageAccountName": {
+            "defaultValue": "[concat('storagea', uniqueString(parameters('workspaceName')))]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure storage account to create."
+            }
+        },
+        "blobContainer": {
+            "type": "string",
+            "defaultValue": "localuploads",
+            "metadata": {
+                "description": "The blob container that will hold the training script."
+            }
+        },
+        "datastoreName": {
+            "type": "string",
+            "defaultValue": "test"
+        }
+    },
+    "variables": {
+        "workspaceResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
+        "datastoreResourceID": "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores', parameters('workspaceName'), parameters('datastoreName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/datastores",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('datastoreName'))]",
+            "apiVersion": "2020-09-01-preview",
+            "dependsOn": [
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "contents": {
+                    "type": "AzureBlob",
+                    "AzureStorage": {
+                        "AccountName": "[parameters('storageAccountName')]",
+                        "ContainerName": "[parameters('blobContainer')]",
+                        "Credentials": {
+                            "type": "AccountKey",
+                            "accountKey": {
+                                "key": "[listKeys(variables('workspaceResourceId'), '2020-09-01-preview').userStorageKey]"
+                            }
+                        },
+                        "Endpoint": "core.windows.net",
+                        "Protocol": "https"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "result": {
+            "value": "[variables('datastoreResourceID')]",
+            "type": "string"
+        }
+    }
+}
