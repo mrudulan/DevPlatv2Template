@@ -1,0 +1,127 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure Machine Learning workspace."
+            },
+            "defaultValue": "mnarkdev2"
+        },
+        "keyVaultName": {
+            "defaultValue": "[concat('kva', uniqueString(parameters('workspaceName')))]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure keyvault to create."
+            }
+        },
+        "storageAccountName": {
+            "defaultValue": "[concat('storagea', uniqueString(parameters('workspaceName')))]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure storage account to create."
+            }
+        },
+        "applicationInsightsName": {
+            "defaultValue": "[concat('aia', uniqueString(parameters('workspaceName')))]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure app insights account to create."
+            }
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the SKU size for interactive and remote compute."
+            }
+        }
+    },
+    "variables": {
+        "storageAccountResourceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "keyVaultResourceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+        "appInsightsResourceId": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
+        "workspaceResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "encryption": {
+                    "services": {
+                        "blob": {
+                            "enabled": true
+                        },
+                        "file": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "supportsHttpsTrafficOnly": true
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2019-09-01",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "tenantId": "[subscription().tenantId]",
+                "sku": {
+                    "name": "standard",
+                    "family": "A"
+                },
+                "accessPolicies": []
+            }
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[parameters('applicationInsightsName')]",
+            "location": "[if(or(equals(parameters('location'),'eastus2'), equals(parameters('location'),'centraluseuap')),'southcentralus',parameters('location'))]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web"
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces",
+            "apiVersion": "2020-03-01",
+            "name": "[parameters('workspaceName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[parameters('applicationInsightsName')]",
+                "[parameters('keyVaultName')]",
+                "[parameters('storageAccountName')]"
+            ],
+            "sku": {
+                "tier": "enterprise",
+                "name": "enterprise"
+            },
+            "identity": {
+                "type": "systemAssigned"
+            },
+            "properties": {
+                "friendlyName": "[parameters('workspaceName')]",
+                "storageAccount": "[variables('storageAccountResourceId')]",
+                "keyVault": "[variables('keyVaultResourceId')]",
+                "applicationInsights": "[variables('appInsightsResourceId')]"
+            }
+        }
+    ],
+    "outputs": {
+        "result": {
+            "value": "[variables('workspaceResourceId')]",
+            "type": "string"
+        }
+    }
+}
