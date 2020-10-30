@@ -23,6 +23,10 @@
             "metadata": {
                 "description": "Name of code asset. Must be a Guid."
             }
+        },
+        "version": {
+            "type": "string",
+            "defaultValue": "1"
         }
     },
     "variables": {
@@ -30,14 +34,15 @@
     },
     "resources": [
         {
-            "type": "Microsoft.MachineLearningServices/workspaces/codes/versions",
-            "name": "[concat(parameters('workspaceName'), '/', parameters('name'), '/', '1')]",
+            "type": "Microsoft.MachineLearningServices/workspaces/data/versions",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('name'), '/', parameters('version'))]",
             "apiVersion": "2020-09-01-preview",
             "dependsOn": [
                 "[parameters('workspaceName')]",
                 "[parameters('datastoreName')]"
             ],
             "properties": {
+                "datasetType": "Simple",
                 "datastoreId": "[variables('datastoreResourceId')]",
                 "assetPaths": [
                     {
@@ -50,7 +55,7 @@
     ],
     "outputs": {
         "result": {
-            "value": "[reference(resourceId('Microsoft.MachineLearningServices/codes/versions', parameters('workspaceName'), parameters('name'), '1'))]",
+            "value": "[reference(resourceId('Microsoft.MachineLearningServices/data/versions', parameters('workspaceName'), parameters('name'), parameters('version')))]",
             "type": "object"
         }
     }

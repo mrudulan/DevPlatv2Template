@@ -16,7 +16,7 @@
                 "description": "Specifies the name of the Azure storage account to create."
             }
         },
-        "uploadToBlobDeploymentScriptName": {
+        "name": {
             "type": "string",
             "defaultValue": "UploadToBlob1"
         },
@@ -62,7 +62,7 @@
         {
             "type": "Microsoft.Resources/deploymentScripts",
             "apiVersion": "2019-10-01-preview",
-            "name": "[parameters('uploadToBlobDeploymentScriptName')]",
+            "name": "[parameters('name')]",
             "location": "eastus",
             "dependsOn": [
                 "[parameters('storageAccountName')]",
@@ -97,7 +97,7 @@
     ],
     "outputs": {
         "result": {
-            "value": "[reference(parameters('uploadToBlobDeploymentScriptName'))]",
+            "value": "[reference(parameters('name'))]",
             "type": "object"
         }
     }

@@ -65,6 +65,17 @@
                 "description": " The maximum number of nodes to use on the cluster. If not specified, defaults to 4."
             }
         },
+        "blobContainer": {
+            "type": "string",
+            "defaultValue": "localuploads",
+            "metadata": {
+                "description": "The blob container that will hold the training script and data."
+            }
+        },
+        "trainingScriptBlobPathInContainer": {
+            "type": "string",
+            "defaultValue": "scripts"
+        },
         "trainingScriptForUpload": {
             "type": "string",
             "metadata": {
@@ -72,16 +83,16 @@
             },
             "defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/code/lightgbm/iris/train.py"
         },
-        "trainingScriptBlobContainer": {
+        "dataBlobPathInContainer": {
             "type": "string",
-            "defaultValue": "localuploads",
-            "metadata": {
-                "description": "The blob container that will hold the training script."
-            }
+            "defaultValue": "data"
         },
-        "trainingScriptBlobPathInContainer": {
+        "dataFileForUpload": {
             "type": "string",
-            "defaultValue": "test"
+            "metadata": {
+                "description": "Link to data file."
+            },
+            "defaultValue": "https://raw.githubusercontent.com/j-so/DevPlatv2Template/jenns/split/data/raw/iris.csv"
         },
         "datastoreName": {
             "type": "string",
@@ -93,6 +104,17 @@
             "metadata": {
                 "description": "Name of code asset. Must be a Guid."
             }
+        },
+        "dataAssetName": {
+            "type": "string",
+            "defaultValue": "[newGuid()]",
+            "metadata": {
+                "description": "Name of data asset."
+            }
+        },
+        "dataAssetVersion": {
+            "type": "string",
+            "defaultValue": "1"
         },
         "jobName": {
             "type": "string",
@@ -145,7 +167,8 @@
         }
     },
     "variables": {
-        "codeVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/codes/versions', parameters('workspaceName'), parameters('codeAssetName'), '1')]"
+        "codeVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/codes/versions', parameters('workspaceName'), parameters('codeAssetName'), '1')]",
+        "dataVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/data/versions', parameters('workspaceName'), parameters('dataAssetName'), parameters('dataAssetVersion'))]"
     },
     "resources": [
         {
@@ -214,17 +237,54 @@
                     "storageAccountName": {
                         "value": "[parameters('storageAccountName')]"
                     },
-                    "uploadToBlobDeploymentScriptName": {
+                    "blobContainer": {
+                        "value": "[parameters('blobContainer')]"
+                    },
+                    "name": {
                         "value": "[parameters('uploadToBlobDeploymentScriptName')]"
                     },
                     "linkToFileForUpload": {
                         "value": "[parameters('trainingScriptForUpload')]"
                     },
-                    "blobContainer": {
-                        "value": "[parameters('trainingScriptBlobContainer')]"
-                    },
                     "blobPathInContainer": {
                         "value": "[parameters('trainingScriptBlobPathInContainer')]"
+                    },
+                    "userAssignedIdentities": {
+                        "value": "[parameters('userAssignedIdentities')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "uploadDataToBlobContainer",
+            "dependsOn": [
+                "createWorkspaceResources"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "azuredeployBlobContainerAndUploadFile.json"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[parameters('workspaceName')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('storageAccountName')]"
+                    },
+                    "blobContainer": {
+                        "value": "[parameters('blobContainer')]"
+                    },
+                    "name": {
+                        "value": "[parameters('uploadToBlobDeploymentScriptName')]"
+                    },
+                    "linkToFileForUpload": {
+                        "value": "[parameters('dataFileForUpload')]"
+                    },
+                    "blobPathInContainer": {
+                        "value": "[parameters('dataBlobPathInContainer')]"
                     },
                     "userAssignedIdentities": {
                         "value": "[parameters('userAssignedIdentities')]"
@@ -253,7 +313,7 @@
                         "value": "[parameters('storageAccountName')]"
                     },
                     "blobContainer": {
-                        "value": "[parameters('trainingScriptBlobContainer')]"
+                        "value": "[parameters('blobContainer')]"
                     },
                     "datastoreName": {
                         "value": "[parameters('datastoreName')]"
@@ -285,8 +345,41 @@
                     "datastoreName": {
                         "value": "[parameters('datastoreName')]"
                     },
-                    "codeAssetName": {
+                    "name": {
                         "value": "[parameters('codeAssetName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "createDataVersion",
+            "dependsOn": [
+                "createWorkspaceResources",
+                "createDatastore",
+                "uploadDataToBlobContainer"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "azuredeployDataVersion.json"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[parameters('workspaceName')]"
+                    },
+                    "pathInContainer": {
+                        "value": "[parameters('trainingScriptBlobPathInContainer')]"
+                    },
+                    "datastoreName": {
+                        "value": "[parameters('datastoreName')]"
+                    },
+                    "name": {
+                        "value": "[parameters('dataAssetName')]"
+                    },
+                    "version": {
+                        "value": "[parameters('dataAssetVersion')]"
                     }
                 }
             }
@@ -301,7 +394,8 @@
                 "[parameters('computeName')]",
                 "createDatastore",
                 "uploadTrainingScriptToBlobContainer",
-                "createCodeVersion"
+                "createCodeVersion",
+                "createDataVersion"
             ],
             "properties": {
                 "jobType": "Command",
@@ -309,6 +403,11 @@
                 "computeBinding": {
                     "computeId": "[parameters('computeName')]",
                     "nodeCount": "1"
+                },
+                "dataBindings": {
+                    "[parameters('dataAssetName')]": {
+                        "sourceDataReference": "[variables('dataVersionResourceId')]"
+                    }
                 },
                 "codeConfiguration": {
                     "codeArtifactId": "[variables('codeVersionResourceId')]",
