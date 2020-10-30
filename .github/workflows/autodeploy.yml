@@ -10,8 +10,8 @@ on:
       - master
     paths:
       - ".github/workflows/autodeploy.yml"
-      - ".cloud/azuredeploy.json"
-      - ".cloud/azuredeploy.parameters.json"
+      - ".cloud/azuredeployWorkspaceCommandJob.json"
+      - ".cloud/azuredeployWorkspaceCommandJob.parameters.json"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -30,4 +30,4 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az deployment group create --resource-group mnarkdev --template-file ./.cloud/azuredeploy.json
+            az deployment group create --resource-group mnarkdev --template-file ./.cloud/azuredeployWorkspaceCommandJob.json
