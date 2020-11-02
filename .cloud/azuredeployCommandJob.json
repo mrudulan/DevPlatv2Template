@@ -95,14 +95,18 @@
             "type": "String"
         },
         "codeAssetName": {
-            "defaultValue": "[newGuid()]",
+            "defaultValue": "myCodeAsset",
             "type": "String",
             "metadata": {
-                "description": "Name of code asset. Must be a Guid."
+                "description": "Name of code asset."
             }
         },
+        "codeAssetVersion": {
+            "defaultValue": "1",
+            "type": "String"
+        },
         "dataAssetName": {
-            "defaultValue": "test",
+            "defaultValue": "myDataAsset",
             "type": "String",
             "metadata": {
                 "description": "Name of data asset."
@@ -171,11 +175,11 @@
         "storageAccountResourceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "keyVaultResourceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
         "appInsightsResourceId": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
-        "codeVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/codes/versions', parameters('workspaceName'), parameters('codeAssetName'), '1')]",
+        "codeVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/codes/versions', parameters('workspaceName'), parameters('codeAssetName'), parameters('codeAssetVersion'))]",
         "workspaceResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
         "datastoreResourceID": "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores', parameters('workspaceName'), parameters('datastoreName'))]",
         "dataVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/data/versions', parameters('workspaceName'), parameters('dataAssetName'), parameters('dataAssetVersion'))]",
-        "environmentResourceId": "[resourceId('Microsoft.MachineLearningServices/workspace/environments', parameters('workspaceName'), parameters('jobCuratedEnvironmentName'))]"
+        "environmentResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/environments', parameters('workspaceName'), parameters('jobCuratedEnvironmentName'))]"
     },
     "resources": [
         {
@@ -376,7 +380,7 @@
         {
             "type": "Microsoft.MachineLearningServices/workspaces/codes/versions",
             "apiVersion": "2020-09-01-preview",
-            "name": "[concat(parameters('workspaceName'), '/', parameters('codeAssetName'), '/', '1')]",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('codeAssetName'), '/', parameters('codeAssetVersion'))]",
             "dependsOn": [
                 "[parameters('workspaceName')]",
                 "[parameters('uploadToBlobDeploymentScriptName')]",
@@ -384,12 +388,10 @@
             ],
             "properties": {
                 "datastoreId": "[variables('datastoreResourceID')]",
-                "assetPaths": [
-                    {
-                        "path": "[parameters('trainingScriptBlobPathInContainer')]",
-                        "isDirectory": true
-                    }
-                ]
+                "assetPath": {
+                    "path": "[parameters('trainingScriptBlobPathInContainer')]",
+                    "isDirectory": true
+                }
             }
         },
         {
@@ -403,12 +405,10 @@
             ],
             "properties": {
                 "datastoreId": "[variables('datastoreResourceID')]",
-                "assetPaths": [
-                    {
-                        "path": "[parameters('trainingScriptBlobPathInContainer')]",
-                        "isDirectory": true
-                    }
-                ]
+                "assetPath": {
+                    "path": "[parameters('trainingScriptBlobPathInContainer')]",
+                    "isDirectory": true
+                }
             }
         },
         {
