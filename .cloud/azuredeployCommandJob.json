@@ -138,7 +138,7 @@
             }
         },
         "jobCuratedEnvironmentName": {
-            "defaultValue": "AzureML-Minimal",
+            "defaultValue": "AzureML-TensorFlow-2.2-CPU",
             "type": "String"
         },
         "jobCommand": {
