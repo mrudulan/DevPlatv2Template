@@ -5,12 +5,7 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, log_loss
 import lightgbm as lgb
-from sklearn import __version__ as sklearnver
-from packaging.version import Version
-if Version(sklearnver) < Version("0.23.0"):
-    from sklearn.externals import joblib
-else:
-    import joblib
+import joblib
 
 import mlflow
 import mlflow.lightgbm
