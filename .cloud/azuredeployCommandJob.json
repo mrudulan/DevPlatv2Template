@@ -45,7 +45,7 @@
             }
         },
         "computeVmSize": {
-            "defaultValue": "Standard_DS3_V2",
+            "defaultValue": "Standard_D3_V2",
             "type": "String",
             "metadata": {
                 "description": "Specifies the SKU size for interactive and remote compute."
@@ -116,6 +116,20 @@
             "defaultValue": "1",
             "type": "String"
         },
+        "targetDataFolder": {
+            "defaultValue": "data",
+            "type": "String",
+            "metadata": {
+                "description": "The folder your dataset contents will be downloaded to for training. This value will be passed as an argument to your training script."
+            }
+        },
+        "jobDataMode": {
+            "defaultValue": "download",
+            "type": "String",
+            "metadata": {
+                "description": "Options: mount, download."
+            }
+        },
         "jobName": {
             "defaultValue": "command4",
             "type": "String",
@@ -131,8 +145,8 @@
             "defaultValue": [
                 "python",
                 "train.py",
-                "--my-data",
-                "DATASET_INPUT"
+                "--data-folder",
+                "[parameters('targetDataFolder')]"
             ],
             "type": "Array",
             "metadata": {
@@ -434,7 +448,7 @@
                 "dataBindings": {
                     "[parameters('dataAssetName')]": {
                         "localReference": "DATASET_INPUT",
-                        "mode": "Mount",
+                        "mode": "[parameters('jobDataMode')]",
                         "sourceDataReference": "[variables('dataVersionResourceId')]"
                     }
                 },
