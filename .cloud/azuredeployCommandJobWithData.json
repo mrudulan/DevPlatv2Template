@@ -160,10 +160,6 @@
                 "description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
             }
         },
-        "uploadToBlobDeploymentScriptName": {
-            "defaultValue": "UploadToBlob1",
-            "type": "String"
-        },
         "userAssignedIdentities": {
             "defaultValue": "/subscriptions/5f08d643-1910-4a38-a7c7-84a39d4f42e0/resourceGroups/mnarkdev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mnarkuai1",
             "type": "String"
@@ -286,7 +282,7 @@
         {
             "type": "Microsoft.Resources/deploymentScripts",
             "apiVersion": "2019-10-01-preview",
-            "name": "[parameters('uploadToBlobDeploymentScriptName')]",
+            "name": "UploadScriptToBlob",
             "location": "eastus",
             "dependsOn": [
                 "[parameters('storageAccountName')]",
@@ -359,7 +355,7 @@
             "name": "[concat(parameters('workspaceName'), '/', parameters('datastoreName'))]",
             "dependsOn": [
                 "[parameters('workspaceName')]",
-                "[parameters('uploadToBlobDeploymentScriptName')]"
+                "[parameters('trainingScriptBlobContainer')]"
             ],
             "properties": {
                 "contents": {
@@ -385,7 +381,7 @@
             "name": "[concat(parameters('workspaceName'), '/', parameters('codeAssetName'), '/', parameters('codeAssetVersion'))]",
             "dependsOn": [
                 "[parameters('workspaceName')]",
-                "[parameters('uploadToBlobDeploymentScriptName')]",
+                "UploadScriptToBlob",
                 "[parameters('datastoreName')]"
             ],
             "properties": {
@@ -449,7 +445,7 @@
     "outputs": {
         "result": {
             "type": "Object",
-            "value": "[reference(parameters('uploadToBlobDeploymentScriptName'))]"
+            "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces/jobs', parameters('workspaceName'), parameters('jobName')))]"
         }
     }
 }
