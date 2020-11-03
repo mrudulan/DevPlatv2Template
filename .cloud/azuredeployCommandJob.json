@@ -130,7 +130,9 @@
         "jobCommand": {
             "defaultValue": [
                 "python",
-                "train.py"
+                "train.py",
+                "--my-data",
+                "DATASET_INPUT"
             ],
             "type": "Array",
             "metadata": {
@@ -431,6 +433,8 @@
                 },
                 "dataBindings": {
                     "[parameters('dataAssetName')]": {
+                        "localReference": "DATASET_INPUT",
+                        "mode": "Mount",
                         "sourceDataReference": "[variables('dataVersionResourceId')]"
                     }
                 },
