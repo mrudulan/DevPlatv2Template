@@ -75,11 +75,9 @@ def main():
     # log metrics
     mlflow.log_metrics({'log_loss': loss, 'accuracy': acc})
 
-    model_file_name = 'model.pkl'
-    # save model in the outputs folder so it automatically get uploaded
-    with open(model_file_name, "wb") as file:
-        joblib.dump(value=model, filename=os.path.join('./outputs/',
-                                                     model_file_name))
+    os.makedirs('outputs', exist_ok=True)
+    # files saved in the "outputs" folder are automatically uploaded into run history
+    joblib.dump(model, 'outputs/model.joblib')
 
 if __name__ == '__main__':
     main()
