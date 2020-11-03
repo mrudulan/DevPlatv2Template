@@ -105,31 +105,6 @@
             "defaultValue": "1",
             "type": "String"
         },
-        "dataAssetName": {
-            "defaultValue": "myDataAsset",
-            "type": "String",
-            "metadata": {
-                "description": "Name of data asset."
-            }
-        },
-        "dataAssetVersion": {
-            "defaultValue": "1",
-            "type": "String"
-        },
-        "targetDataFolder": {
-            "defaultValue": "data",
-            "type": "String",
-            "metadata": {
-                "description": "The folder your dataset contents will be downloaded to for training. This value will be passed as an argument to your training script."
-            }
-        },
-        "jobDataMode": {
-            "defaultValue": "download",
-            "type": "String",
-            "metadata": {
-                "description": "Options: mount, download."
-            }
-        },
         "jobName": {
             "defaultValue": "command4",
             "type": "String",
@@ -144,9 +119,7 @@
         "jobCommand": {
             "defaultValue": [
                 "python",
-                "train.py",
-                "--data-folder",
-                "[parameters('targetDataFolder')]"
+                "train.py"
             ],
             "type": "Array",
             "metadata": {
@@ -194,7 +167,6 @@
         "codeVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/codes/versions', parameters('workspaceName'), parameters('codeAssetName'), parameters('codeAssetVersion'))]",
         "workspaceResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
         "datastoreResourceID": "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores', parameters('workspaceName'), parameters('datastoreName'))]",
-        "dataVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/data/versions', parameters('workspaceName'), parameters('dataAssetName'), parameters('dataAssetVersion'))]",
         "environmentResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/environments', parameters('workspaceName'), parameters('jobCuratedEnvironmentName'))]"
     },
     "resources": [
@@ -411,23 +383,6 @@
             }
         },
         {
-            "type": "Microsoft.MachineLearningServices/workspaces/data/versions",
-            "apiVersion": "2020-09-01-preview",
-            "name": "[concat(parameters('workspaceName'), '/', parameters('dataAssetName'), '/', parameters('dataAssetVersion'))]",
-            "dependsOn": [
-                "[parameters('workspaceName')]",
-                "UploadDataToBlob",
-                "[parameters('datastoreName')]"
-            ],
-            "properties": {
-                "datastoreId": "[variables('datastoreResourceID')]",
-                "assetPath": {
-                    "path": "[parameters('trainingScriptBlobPathInContainer')]",
-                    "isDirectory": true
-                }
-            }
-        },
-        {
             "type": "Microsoft.MachineLearningServices/workspaces/jobs",
             "apiVersion": "2020-09-01-preview",
             "name": "[concat(parameters('workspaceName'), '/', parameters('jobName'))]",
@@ -435,7 +390,6 @@
             "dependsOn": [
                 "[parameters('workspaceName')]",
                 "[variables('codeVersionResourceId')]",
-                "[variables('dataVersionResourceId')]",
                 "[parameters('computeName')]"
             ],
             "properties": {
@@ -444,13 +398,6 @@
                 "computeBinding": {
                     "computeId": "[parameters('computeName')]",
                     "nodeCount": "1"
-                },
-                "dataBindings": {
-                    "[parameters('dataAssetName')]": {
-                        "localReference": "DATASET_INPUT",
-                        "mode": "[parameters('jobDataMode')]",
-                        "sourceDataReference": "[variables('dataVersionResourceId')]"
-                    }
                 },
                 "codeConfiguration": {
                     "codeArtifactId": "[variables('codeVersionResourceId')]",
