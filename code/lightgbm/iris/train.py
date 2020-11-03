@@ -70,9 +70,7 @@ def main():
     # log metrics
     mlflow.log_metrics({'log_loss': loss, 'accuracy': acc})
 
-    os.makedirs('outputs', exist_ok=True)
-    # files saved in the "outputs" folder are automatically uploaded into run history
-    joblib.dump(model, 'outputs/model.joblib')
+    joblib.dump(model, 'model.joblib')
 
 if __name__ == '__main__':
     main()
