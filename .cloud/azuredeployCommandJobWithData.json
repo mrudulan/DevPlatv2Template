@@ -144,9 +144,7 @@
         "jobCommand": {
             "defaultValue": [
                 "python",
-                "train.py",
-                "--data-folder",
-                "[parameters('targetDataFolder')]"
+                "train.py"
             ],
             "type": "Array",
             "metadata": {
@@ -429,7 +427,7 @@
                 },
                 "dataBindings": {
                     "[parameters('dataAssetName')]": {
-                        "localReference": "DATASET_INPUT",
+                        "localReference": "[parameters('targetDataFolder')]",
                         "mode": "[parameters('jobDataMode')]",
                         "sourceDataReference": "[variables('dataVersionResourceId')]"
                     }

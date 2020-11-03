@@ -4,6 +4,11 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, log_loss
 import lightgbm as lgb
+from sklearn import __version__ as sklearnver
+if Version(sklearnver) < Version("0.23.0"):
+    from sklearn.externals import joblib
+else:
+    import joblib
 
 import mlflow
 import mlflow.lightgbm
@@ -67,6 +72,12 @@ def main():
 
     # log metrics
     mlflow.log_metrics({'log_loss': loss, 'accuracy': acc})
+
+    model_file_name = 'model.pkl'
+    # save model in the outputs folder so it automatically get uploaded
+    with open(model_file_name, "wb") as file:
+        joblib.dump(value=model, filename=os.path.join('./outputs/',
+                                                     model_file_name))
 
 if __name__ == '__main__':
     main()
