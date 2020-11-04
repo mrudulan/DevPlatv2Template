@@ -120,7 +120,7 @@
             "defaultValue": "data",
             "type": "String",
             "metadata": {
-                "description": "The folder your dataset contents will be downloaded to for training. This value will be passed as an argument to your training script."
+                "description": "The folder your dataset contents will be downloaded to for training."
             }
         },
         "jobDataMode": {
