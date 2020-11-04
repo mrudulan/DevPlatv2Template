@@ -73,7 +73,7 @@
             }
         },
         "dataForUpload": {
-            "defaultValue": "https://raw.githubusercontent.com/j-so/DevPlatv2Template/jenns/split/data/raw/iris.csv",
+            "defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/data/raw/iris.csv",
             "type": "String",
             "metadata": {
                 "description": "Link to data file."

@@ -1,9 +1,11 @@
 import argparse
 
+import os
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, log_loss
 import lightgbm as lgb
+import joblib
 
 import mlflow
 import mlflow.lightgbm
@@ -64,9 +66,14 @@ def main():
     y_pred = y_proba.argmax(axis=1)
     loss = log_loss(y_test, y_proba)
     acc = accuracy_score(y_test, y_pred)
+    
+    os.makedirs('outputs', exist_ok=True)
+    # files saved in the "outputs" folder are automatically uploaded into run history
+    joblib.dump(model, 'outputs/model.joblib')
 
     # log metrics
     mlflow.log_metrics({'log_loss': loss, 'accuracy': acc})
+
 
 if __name__ == '__main__':
     main()
