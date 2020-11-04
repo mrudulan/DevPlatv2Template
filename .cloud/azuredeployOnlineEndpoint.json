@@ -82,19 +82,24 @@
             }
         },
         "scoringScriptPathInContainer": {
-            "defaultValue": "test",
+            "defaultValue": "ExperimentRun/dcid.command24/outputs/sklearn_regression_model.pkl",
             "type": "String"
         },
         "scoringScriptForUpload": {
-            "defaultValue": "test",
+            "defaultValue": "https://raw.githubusercontent.com/Azure/MachineLearningNotebooks/master/how-to-use-azureml/deployment/deploy-to-cloud/score.py",
             "type": "String"
         },
         "scoringScriptName": {
-            "defaultValue": "score.py",
-            "type": "String"
+            "defaultValue": [
+                "score.py"
+            ],
+            "type": "Array",
+            "metadata": {
+                "description": "Scoring script name."
+            }
         },
         "codeAssetName": {
-            "defaultValue": "myCodeAsset",
+            "defaultValue": "scoringAsset",
             "type": "String",
             "metadata": {
                 "description": "Name of code asset."
@@ -247,19 +252,32 @@
             }
         },
         {
+            "type": "Microsoft.MachineLearningServices/workspaces/models",
+            "apiVersion": "2020-09-01-preview",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('modelName'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+            }
+        },
+        {
             "type": "Microsoft.MachineLearningServices/workspaces/models/versions",
             "apiVersion": "2020-09-01-preview",
             "name": "[concat(parameters('workspaceName'), '/', parameters('modelName'), '/', parameters('modelVersion'))]",
             "dependsOn": [
                 "[parameters('workspaceName')]",
-                "[parameters('azuremlDatastoreName')]"
+                "[parameters('azuremlDatastoreName')]",
+                "[parameters('modelName')]"
             ],
             "properties": {
                 "datastoreId": "[variables('azuremlDatastoreResourceID')]",
                 "assetPath": {
                     "path": "[parameters('modelPathInContainer')]",
                     "isDirectory": false
-                }
+                },
+                "tags": {},
+                "properties": {}
             }
         },
         {
@@ -350,11 +368,15 @@
         },
         {
             "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
-            "apiVersion": "2020-09-01-preview",
+            "apiVersion": "2020-12-01-preview",
+            "location": "[parameters('location')]",
             "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
             "dependsOn": [
                 "[parameters('workspaceName')]"
             ],
+            "identity": {
+                "type": "None"
+            },
             "properties": {
                 "computeConfiguration": {
                     "computeType": "AKS",
@@ -365,14 +387,19 @@
         },
         {
             "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments",
-            "apiVersion": "2020-09-01-preview",
+            "apiVersion": "2020-12-01-preview",
+            "location": "[parameters('location')]",
             "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'), '/', parameters('onlineDeploymentName'))]",
             "dependsOn": [
                 "[parameters('workspaceName')]",
                 "[parameters('onlineEndpointName')]"
             ],
+            "identity": {
+                "type": "None"
+            },
             "properties": {
                 "modelReference": {
+                    "ReferenceType": "Id",
                     "id": "[variables('modelVersionResourceId')]"
                 },
                 "environmentId": "[variables('environmentResourceId')]",
@@ -382,6 +409,10 @@
                 },
                 "deploymentConfiguration": {
                     "computeType": "AKS"
+                },
+                "scaleSettings": {
+                    "scaleType": "Manual",
+                    "instanceCount": 1
                 }
             }
         }
