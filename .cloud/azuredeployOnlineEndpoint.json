@@ -56,10 +56,10 @@
             }
         },
         "modelPathInContainer": {
-            "defaultValue": "ExperimentRun/dcid.command24/outputs/sklearn_regression_model.pkl",
+            "defaultValue": "ExperimentRun/dcid.command1/outputs/model.joblib",
             "type": "String",
             "metadata": {
-                "description": "Path to the model pkl file."
+                "description": "Path to the model file."
             }
         },
         "modelName": {
@@ -86,7 +86,7 @@
             "type": "String"
         },
         "scoringScriptForUpload": {
-            "defaultValue": "https://raw.githubusercontent.com/Azure/MachineLearningNotebooks/master/how-to-use-azureml/deployment/deploy-to-cloud/score.py",
+            "defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/code/lightgbm/iris/score.py",
             "type": "String"
         },
         "scoringScriptName": {
@@ -119,7 +119,10 @@
         },
         "environmentName": {
             "defaultValue": "my-sklearn-environment",
-            "type": "String"
+            "type": "String",
+            "metadata": {
+                "description": "Environment name. Environment should be registered in advance, as this template does not create it."
+            }
         },
         "environmentVersion": {
             "defaultValue": "1",

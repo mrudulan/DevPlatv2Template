@@ -10,7 +10,7 @@ def init():
     # AZUREML_MODEL_DIR is an environment variable created during deployment.
     # It is the path to the model folder (./azureml-models/$MODEL_NAME/$VERSION)
     # For multiple models, it points to the folder containing all deployed models (./azureml-models)
-    model_path = os.path.join(os.getenv('AZUREML_MODEL_DIR'), 'model.pkl')
+    model_path = os.path.join(os.getenv('AZUREML_MODEL_DIR'), 'model.joblib')
     # deserialize the model file back into a sklearn model
     model = joblib.load(model_path)
 
