@@ -79,14 +79,14 @@
                 "description": "Link to data file."
             }
         },
-        "trainingScriptBlobContainer": {
+        "targetTrainingBlobContainer": {
             "defaultValue": "localuploads",
             "type": "String",
             "metadata": {
                 "description": "The blob container that will hold the training script."
             }
         },
-        "trainingScriptBlobPathInContainer": {
+        "targetTrainingBlobPathInContainer": {
             "defaultValue": "test",
             "type": "String"
         },
@@ -272,7 +272,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-06-01",
-            "name": "[concat(parameters('storageAccountName'), '/', 'default', '/', parameters('trainingScriptBlobContainer'))]",
+            "name": "[concat(parameters('storageAccountName'), '/', 'default', '/', parameters('targetTrainingBlobContainer'))]",
             "dependsOn": [
                 "[parameters('storageAccountName')]"
             ]
@@ -284,7 +284,7 @@
             "location": "eastus",
             "dependsOn": [
                 "[parameters('storageAccountName')]",
-                "[parameters('trainingScriptBlobContainer')]"
+                "[parameters('targetTrainingBlobContainer')]"
             ],
             "kind": "AzureCLI",
             "identity": {
@@ -299,7 +299,7 @@
                 },
                 "forceUpdateTag": "[parameters('utcValue')]",
                 "azCliVersion": "2.13.0",
-                "arguments": "[concat(parameters('trainingScriptForUpload'), ' ', parameters('trainingScriptBlobContainer'), ' ', parameters('trainingScriptBlobPathInContainer'), ' ', parameters('storageAccountName'))]",
+                "arguments": "[concat(parameters('trainingScriptForUpload'), ' ', parameters('targetTrainingBlobContainer'), ' ', parameters('targetTrainingBlobPathInContainer'), ' ', parameters('storageAccountName'))]",
                 "scriptContent": "wget $1; downloadfilename=$(basename $1); az storage blob upload -f $downloadfilename -c $2/$3 --account-name $4 -n $downloadfilename",
                 "timeout": "PT30M",
                 "cleanupPreference": "OnSuccess",
@@ -319,7 +319,7 @@
             "location": "eastus",
             "dependsOn": [
                 "[parameters('storageAccountName')]",
-                "[parameters('trainingScriptBlobContainer')]"
+                "[parameters('targetTrainingBlobContainer')]"
             ],
             "kind": "AzureCLI",
             "identity": {
@@ -334,7 +334,7 @@
                 },
                 "forceUpdateTag": "[parameters('utcValue')]",
                 "azCliVersion": "2.13.0",
-                "arguments": "[concat(parameters('dataForUpload'), ' ', parameters('trainingScriptBlobContainer'), ' ', parameters('trainingScriptBlobPathInContainer'), ' ', parameters('storageAccountName'))]",
+                "arguments": "[concat(parameters('dataForUpload'), ' ', parameters('targetTrainingBlobContainer'), ' ', parameters('targetTrainingBlobPathInContainer'), ' ', parameters('storageAccountName'))]",
                 "scriptContent": "wget $1; downloadfilename=$(basename $1); az storage blob upload -f $downloadfilename -c $2/$3 --account-name $4 -n $downloadfilename",
                 "timeout": "PT30M",
                 "cleanupPreference": "OnSuccess",
@@ -353,14 +353,14 @@
             "name": "[concat(parameters('workspaceName'), '/', parameters('datastoreName'))]",
             "dependsOn": [
                 "[parameters('workspaceName')]",
-                "[parameters('trainingScriptBlobContainer')]"
+                "[parameters('targetTrainingBlobContainer')]"
             ],
             "properties": {
                 "contents": {
                     "type": "AzureBlob",
                     "AzureStorage": {
                         "AccountName": "[parameters('storageAccountName')]",
-                        "ContainerName": "[parameters('trainingScriptBlobContainer')]",
+                        "ContainerName": "[parameters('targetTrainingBlobContainer')]",
                         "Credentials": {
                             "type": "AccountKey",
                             "accountKey": {
@@ -385,7 +385,7 @@
             "properties": {
                 "datastoreId": "[variables('datastoreResourceID')]",
                 "assetPath": {
-                    "path": "[parameters('trainingScriptBlobPathInContainer')]",
+                    "path": "[parameters('targetTrainingBlobPathInContainer')]",
                     "isDirectory": true
                 }
             }
@@ -402,7 +402,7 @@
             "properties": {
                 "datastoreId": "[variables('datastoreResourceID')]",
                 "assetPath": {
-                    "path": "[parameters('trainingScriptBlobPathInContainer')]",
+                    "path": "[parameters('targetTrainingBlobPathInContainer')]",
                     "isDirectory": true
                 }
             }
