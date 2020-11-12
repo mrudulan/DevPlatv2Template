@@ -341,7 +341,7 @@
       "name": "[concat(parameters('workspaceName'), '/', parameters('codeAssetName'), '/', parameters('codeAssetVersion'))]",
       "dependsOn": [
         "[parameters('workspaceName')]",
-        "trainingScriptCopy",
+        "dataCopy",
         "[parameters('datastoreName')]"
       ],
       "properties": {
