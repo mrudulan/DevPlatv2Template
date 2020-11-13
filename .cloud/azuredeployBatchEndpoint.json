@@ -34,16 +34,12 @@
             "defaultValue": "2",
             "type": "String"
         },
-        "utcValue": {
-            "defaultValue": "[utcNow()]",
-            "type": "String"
-        },
         "batchEndpointName": {
-            "defaultValue": "batchep1",
+            "defaultValue": "[concat("batchep", [uniqueString(parameters('workspaceName'), parameters('modelName') )])]",
             "type": "String"
         },
         "batchDeploymentName": {
-            "defaultValue": "batchep1dep1",
+            "defaultValue": "[concat("batchdep", [uniqueString(parameters('workspaceName'), parameters('modelName') )])]",
             "type": "String"
         }
     },
