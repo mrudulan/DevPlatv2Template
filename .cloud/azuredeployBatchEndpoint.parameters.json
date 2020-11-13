@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "value": "puviWs3"
+            "value": "puviWs4"
         },
         "computeName": {
             "value": "cpu-cluster"

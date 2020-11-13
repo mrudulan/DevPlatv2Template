@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "defaultValue": "puviWs3",
+            "defaultValue": "puviWs4",
             "type": "String",
             "metadata": {
                 "description": "Specifies the name of the Azure Machine Learning workspace."
@@ -31,7 +31,7 @@
             }
         },
         "modelVersion": {
-            "defaultValue": "33",
+            "defaultValue": "2",
             "type": "String"
         },
         "utcValue": {
