@@ -31,7 +31,7 @@
             }
         },
         "modelVersion": {
-            "defaultValue": "1",
+            "defaultValue": "33",
             "type": "String"
         },
         "utcValue": {
@@ -39,11 +39,11 @@
             "type": "String"
         },
         "batchEndpointName": {
-            "defaultValue": "[concat('batch-endpoint', parameters('utcValue'))]",
+            "defaultValue": "batchep1",
             "type": "String"
         },
         "batchDeploymentName": {
-            "defaultValue": "[concat('batch-deployment', parameters('utcValue'))]",
+            "defaultValue": "batchep1dep1",
             "type": "String"
         }
     },
