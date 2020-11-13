@@ -34,16 +34,16 @@
             "defaultValue": "1",
             "type": "String"
         },
+        "utcValue": {
+            "defaultValue": "[utcNow()]",
+            "type": "String"
+        },
         "batchEndpointName": {
             "defaultValue": "[concat('batch-endpoint', parameters('utcValue'))]",
             "type": "String"
         },
         "batchDeploymentName": {
             "defaultValue": "[concat('batch-deployment', parameters('utcValue'))]",
-            "type": "String"
-        },
-        "utcValue": {
-            "defaultValue": "[utcNow()]",
             "type": "String"
         }
     },
