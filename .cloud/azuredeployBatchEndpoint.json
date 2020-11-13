@@ -2,39 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "randomId": {
-            "defaultValue": "j",
-            "type": "String",
-            "metadata": {
-                "description": "Specifies the name of the Azure Machine Learning workspace."
-            }
-        },
         "workspaceName": {
-            "defaultValue": "[concat('puvi-generated-', parameters('randomId'))]",
+            "defaultValue": "puviWs3",
             "type": "String",
             "metadata": {
                 "description": "Specifies the name of the Azure Machine Learning workspace."
-            }
-        },
-        "keyVaultName": {
-            "defaultValue": "[concat('kvxy', parameters('randomId'))]",
-            "type": "String",
-            "metadata": {
-                "description": "Specifies the name of the Azure keyvault to create."
-            }
-        },
-        "storageAccountName": {
-            "defaultValue": "[concat('storxy', parameters('randomId'))]",
-            "type": "String",
-            "metadata": {
-                "description": "Specifies the name of the Azure storage account to create."
-            }
-        },
-        "applicationInsightsName": {
-            "defaultValue": "[concat('aixy', parameters('randomId'))]",
-            "type": "String",
-            "metadata": {
-                "description": "Specifies the name of the Azure app insights account to create."
             }
         },
         "location": {
@@ -63,26 +35,11 @@
             "type": "String"
         },
         "batchEndpointName": {
-            "defaultValue": "[concat('batch-endpoint', parameters('randomId'))]",
+            "defaultValue": "[concat('batch-endpoint', parameters('utcValue'))]",
             "type": "String"
         },
         "batchDeploymentName": {
-            "defaultValue": "[concat('batch-deployment', parameters('randomId'))]",
-            "type": "String"
-        },
-        "environmentName": {
-            "defaultValue": "my-sklearn-environment",
-            "type": "String",
-            "metadata": {
-                "description": "Environment name. Environment should be registered in advance, as this template does not create it."
-            }
-        },
-        "environmentVersion": {
-            "defaultValue": "1",
-            "type": "String"
-        },
-        "userAssignedIdentities": {
-            "defaultValue": "/subscriptions/5f08d643-1910-4a38-a7c7-84a39d4f42e0/resourceGroups/mnarkdev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mnarkuai1",
+            "defaultValue": "[concat('batch-deployment', parameters('utcValue'))]",
             "type": "String"
         },
         "utcValue": {
@@ -91,86 +48,9 @@
         }
     },
     "variables": {
-        "storageAccountResourceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
-        "keyVaultResourceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
-        "appInsightsResourceId": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
-        "workspaceResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
         "modelVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/models/versions', parameters('workspaceName'), parameters('modelName'), parameters('modelVersion'))]",
-        "environmentResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/environments/versions', parameters('workspaceName'), parameters('environmentName'), parameters('environmentVersion'))]"
     },
     "resources": [
-        {
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2019-06-01",
-            "name": "[parameters('storageAccountName')]",
-            "location": "[parameters('location')]",
-            "sku": {
-                "name": "Standard_LRS"
-            },
-            "kind": "StorageV2",
-            "properties": {
-                "encryption": {
-                    "services": {
-                        "blob": {
-                            "enabled": true
-                        },
-                        "file": {
-                            "enabled": true
-                        }
-                    },
-                    "keySource": "Microsoft.Storage"
-                },
-                "supportsHttpsTrafficOnly": true
-            }
-        },
-        {
-            "type": "Microsoft.KeyVault/vaults",
-            "apiVersion": "2019-09-01",
-            "name": "[parameters('keyVaultName')]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "tenantId": "[subscription().tenantId]",
-                "sku": {
-                    "name": "standard",
-                    "family": "A"
-                },
-                "accessPolicies": []
-            }
-        },
-        {
-            "type": "Microsoft.Insights/components",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[parameters('applicationInsightsName')]",
-            "location": "[if(or(equals(parameters('location'),'eastus2'), equals(parameters('location'),'centraluseuap')),'southcentralus',parameters('location'))]",
-            "kind": "web",
-            "properties": {
-                "Application_Type": "web"
-            }
-        },
-        {
-            "type": "Microsoft.MachineLearningServices/workspaces",
-            "apiVersion": "2020-03-01",
-            "name": "[parameters('workspaceName')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[parameters('applicationInsightsName')]",
-                "[parameters('keyVaultName')]",
-                "[parameters('storageAccountName')]"
-            ],
-            "sku": {
-                "tier": "enterprise",
-                "name": "enterprise"
-            },
-            "identity": {
-                "type": "systemAssigned"
-            },
-            "properties": {
-                "friendlyName": "[parameters('workspaceName')]",
-                "storageAccount": "[variables('storageAccountResourceId')]",
-                "keyVault": "[variables('keyVaultResourceId')]",
-                "applicationInsights": "[variables('appInsightsResourceId')]"
-            }
-        },
         {
             "type": "Microsoft.MachineLearningServices/workspaces/batchEndpoints",
             "apiVersion": "2020-09-01-preview",
