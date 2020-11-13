@@ -56,9 +56,7 @@
             "apiVersion": "2020-09-01-preview",
             "location": "[parameters('location')]",
             "name": "[concat(parameters('workspaceName'), '/', parameters('batchEndpointName'))]",
-            "dependsOn": [
-                "[parameters('workspaceName')]"
-            ],
+            "dependsOn": [],
             "identity": {
                 "type": "None"
             },
@@ -73,7 +71,6 @@
             "location": "[parameters('location')]",
             "name": "[concat(parameters('workspaceName'), '/', parameters('batchEndpointName'), '/', parameters('batchDeploymentName'))]",
             "dependsOn": [
-                "[parameters('workspaceName')]",
                 "[parameters('batchEndpointName')]"
             ],
             "identity": {
