@@ -1,27 +1,9 @@
-# Light GBM on Azure Machine Learning Service 
+# Predict NYC Taxi Tips
 
-<img src=https://github.com/microsoft/LightGBM/blob/master/docs/logo/LightGBM_logo_black_text.svg width=100 />
-
-
-LightGBM is a gradient boosting framework that uses tree based learning algorithms. It is designed to be distributed and efficient with the following advantages:
-
-- Faster training speed and higher efficiency.
-- Lower memory usage.
-- Better accuracy.
-- Support of parallel and GPU learning.
-- Capable of handling large-scale data.
-
-For further details, please refer to [Features](https://github.com/microsoft/LightGBM/blob/master/docs/Features.rst).
-
-Benefitting from these advantages, LightGBM is being widely-used in many [winning solutions](https://github.com/microsoft/LightGBM/blob/master/examples/README.md#machine-learning-challenge-winning-solutions) of machine learning competitions.
-
-[Comparison experiments](https://github.com/microsoft/LightGBM/blob/master/docs/Experiments.rst#comparison-experiment) on public datasets show that LightGBM can outperform existing boosting frameworks on both efficiency and accuracy, with significantly lower memory consumption. What's more, [parallel experiments](https://github.com/microsoft/LightGBM/blob/master/docs/Experiments.rst#parallel-experiment) show that LightGBM can achieve a linear speed-up by using multiple machines for training in specific settings.
+This repo trains a model based on an Open Dataset that tracks NYC Yellow Taxi trips and various attributes around them. The goal is to for a given trip, predict whether there will be a tip or not. The model then will be converted to ONNX format and tracked by MLFlow. We will later use the ONNX model for inferencing in Azure Synapse SQL Pool using the new model scoring wizard.
 
 Get Started and Documentation
 -----------------------------
-
-Our primary documentation is at https://lightgbm.readthedocs.io/ and is generated from this repository. If you are new to LightGBM, follow [the installation instructions](https://lightgbm.readthedocs.io/en/latest/Installation-Guide.html) on that site.
-
 
 # Azure Machine Learning Service 
 [Azure Machine Learning service](https://azure.microsoft.com/en-us/services/machine-learning-service/) provides a cloud-based environment to prep data, train, test, deploy, manage, and track machine learning models. This service fully supports open-source technologies such as PyTorch, TensorFlow, and scikit-learn and can be used for any kind of machine learning, from classical ML to deep learning, supervised and unsupervised learning.
@@ -30,16 +12,18 @@ Learn how Azure Machine Learning can help you streamline the building, training,
 
 # Getting Started
 
-### Train a LightGBM model w/ Datasets
+### Train a sklearn model w/ NYC Yellow Taxi trips
 
 [![Train With Datasets On Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmrudulan%2FDevPlatv2Template%2Fmaster%2F.cloud%2FazuredeployCommandJobWithData.json)
 [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.svg?sanitize=true)](http://armviz.io/#/?load=https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/.cloud/azuredeployCommandJobWithData.json)
 
-### Train a LightGBM model w/ Distributed Training
 
-[![Train With Tensorflow Distributed Config On Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmrudulan%2FDevPlatv2Template%2Fmaster%2F.cloud%2FazuredeployCommandJobTensorflow.json)
+### Deploy a sklearn model as a batch endpoint
 
-### Deploy a LightGBM model as an endpoint
+[![Train On Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmrudulan%2FDevPlatv2Template%2Fmaster%2F.cloud%2FazuredeployBatchEndpoint.json)
+
+
+### Deploy a sklearn model as an online endpoint
 
 [![Train On Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmrudulan%2FDevPlatv2Template%2Fmaster%2F.cloud%2FazuredeployOnlineEndpoint.json)
 
@@ -52,3 +36,5 @@ If you are new to Azure Machine Learning, see:
 - [Azure Machine Learning documentation](https://docs.microsoft.com/azure/machine-learning/)
 - [Azure Machine Learning template reference](https://docs.microsoft.com/azure/templates/microsoft.machinelearningservices/allversions)
 - [Quickstart templates](https://azure.microsoft.com/resources/templates/)
+- [MLflow](https://github.com/mlflow/mlflow)
+- [MLflow in Azure ML](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-use-mlflow)

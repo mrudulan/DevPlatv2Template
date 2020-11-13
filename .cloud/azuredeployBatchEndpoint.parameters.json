@@ -12,10 +12,10 @@
             "value": "nyc-taxi-sklearn-model"
         },
         "batchEndpointName": {
-            "value": "batchEndpointName04"
+            "value": "test01"
         },
         "batchDeploymentName": {
-            "value": "batchDeploymentName04"
+            "value": "test01"
         },
         "location": {
             "value": "centraluseuap"
