@@ -1,9 +1,6 @@
 # Predict NYC Taxi Tips
 
-This repo trains a model based on an Open Dataset that tracks NYC Yellow Taxi trips and various attributes around them. The goal is to for a given trip, predict whether there will be a tip or not. The model then will be converted to ONNX format and tracked by MLFlow. We will later use the ONNX model for inferencing in Azure Synapse SQL Pool using the new model scoring wizard.
-
-Get Started and Documentation
------------------------------
+This repo trains a model based on an Open Dataset that tracks NYC Yellow Taxi trips and various attributes around them. The goal is to for a given trip, predict whether there will be a tip or not. The model then will be converted to ONNX format and tracked by MLFlow.
 
 # Azure Machine Learning Service 
 [Azure Machine Learning service](https://azure.microsoft.com/en-us/services/machine-learning-service/) provides a cloud-based environment to prep data, train, test, deploy, manage, and track machine learning models. This service fully supports open-source technologies such as PyTorch, TensorFlow, and scikit-learn and can be used for any kind of machine learning, from classical ML to deep learning, supervised and unsupervised learning.
