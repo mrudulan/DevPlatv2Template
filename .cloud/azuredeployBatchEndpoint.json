@@ -35,11 +35,11 @@
             "type": "String"
         },
         "batchEndpointName": {
-            "defaultValue": "[concat( parameters('workspaceName'), 'batchEndpoint', uniqueString('endpoint') )]",
+            "defaultValue": "[concat('endpoint', take(uniqueString('endpoint'), 5) )]",
             "type": "String"
         },
         "batchDeploymentName": {
-            "defaultValue": "[concat( parameters('workspaceName'), 'batchDeployment', uniqueString('deployment') )]",
+            "defaultValue": "[concat('deployment', take(uniqueString('deployment'), 5) )]",
             "type": "String"
         }
     },
