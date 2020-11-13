@@ -1,0 +1,101 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "defaultValue": "puviWs4",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure Machine Learning workspace."
+            }
+        },
+        "location": {
+            "defaultValue": "centraluseuap",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies location."
+            }
+        },
+        "computeName": {
+            "defaultValue": "cpu-cluster",
+            "type": "String",
+            "metadata": {
+                "description": "The compute you want this job to run on, should be registered in advance, as this template does not create it."
+            }
+        },
+        "modelName": {
+            "defaultValue": "nyc-taxi-sklearn-model",
+            "type": "String",
+            "metadata": {
+                "description": "The trained model you want to use for batch inferencing, this template does not train a model."
+            }
+        },
+        "modelVersion": {
+            "defaultValue": "2",
+            "type": "String"
+        },
+        "batchEndpointName": {
+            "defaultValue": "[concat('endpoint', take(uniqueString('endpoint'), 5) )]",
+            "type": "String"
+        },
+        "batchDeploymentName": {
+            "defaultValue": "[concat('deployment', take(uniqueString('deployment'), 5) )]",
+            "type": "String"
+        }
+    },
+    "variables": {
+        "modelVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/models/versions', parameters('workspaceName'), parameters('modelName'), parameters('modelVersion'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/batchEndpoints",
+            "apiVersion": "2020-09-01-preview",
+            "location": "[parameters('location')]",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('batchEndpointName'))]",
+            "dependsOn": [],
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "name": "[concat(parameters('workspaceName'), '/', parameters('batchEndpointName'))]",
+                "description": "Testing batch endpoint creation"
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/batchEndpoints/deployments",
+            "apiVersion": "2020-09-01-preview",
+            "location": "[parameters('location')]",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('batchEndpointName'), '/', parameters('batchDeploymentName'))]",
+            "dependsOn": [
+                "[parameters('batchEndpointName')]"
+            ],
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "name": "parameters('batchDeploymentName')",
+                "description": "Testing deployment creation",
+                "scaleSettings": {
+                    "nodeCount": 1
+                },
+                "batchSettings": {
+                    "computeId" : "[parameters('computeName')]",
+                    "partitioningScheme": {
+                        "miniBatchSize": 5
+                    },
+                    "outputConfiguration": {
+                        "outputAction": "AppendRow"
+                    },
+                    "errorThreshold": 5,
+                    "retrySettings": {
+                        "timeoutInSeconds": 30
+                    }
+                },        
+                "modelReference": {
+                    "ReferenceType": "Id",
+                    "id": "[variables('modelVersionResourceId')]"
+                }
+            }
+        }
+    ]
+}
