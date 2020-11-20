@@ -1,0 +1,443 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "defaultValue": "yeta-dev-ws",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure Machine Learning workspace."
+            }
+        },
+        "keyVaultName": {
+            "defaultValue": "[concat('kva', uniqueString(parameters('workspaceName')))]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure keyvault to create."
+            }
+        },
+        "storageAccountName": {
+            "defaultValue": "[concat('storagea', uniqueString(parameters('workspaceName')))]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure storage account to create."
+            }
+        },
+        "applicationInsightsName": {
+            "defaultValue": "[concat('aia', uniqueString(parameters('workspaceName')))]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure app insights account to create."
+            }
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the SKU size for interactive and remote compute."
+            }
+        },
+        "trainingComputeName": {
+            "defaultValue": "trainingcompute",
+            "type": "String",
+            "metadata": {
+                "description": "The compute you want this job to run training on"
+            }
+        },
+        "inferencingComputeName": {
+            "defaultValue": "inferencingcompute",
+            "type": "String",
+            "metadata": {
+                "description": "The compute you want this job to run inferencing on"
+            }
+        },
+        "computeVmSize": {
+            "defaultValue": "Standard_D3_V2",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the SKU size for interactive and remote compute."
+            }
+        },
+        "computeMinNodeCount": {
+            "defaultValue": 0,
+            "type": "Int",
+            "metadata": {
+                "description": "The minimum number of nodes to use on the cluster. If not specified, defaults to 0"
+            }
+        },
+        "computeMaxNodeCount": {
+            "defaultValue": 4,
+            "type": "Int",
+            "metadata": {
+                "description": " The maximum number of nodes to use on the cluster. If not specified, defaults to 4."
+            }
+        },
+        "dataForUpload": {
+            "defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/data/raw/Image0.jpg",
+            "type": "String",
+            "metadata": {
+                "description": "Link to data file."
+            }
+        },
+        "targetTrainingBlobContainer": {
+            "defaultValue": "localuploads",
+            "type": "String",
+            "metadata": {
+                "description": "The blob container that will hold the training script."
+            }
+        },
+        "targetTrainingBlobPathInContainer": {
+            "defaultValue": "test",
+            "type": "String"
+        },
+        "datastoreName": {
+            "defaultValue": "test",
+            "type": "String"
+        },
+        "dataAssetName": {
+            "defaultValue": "myDataAsset",
+            "type": "String",
+            "metadata": {
+                "description": "Name of data asset."
+            }
+        },
+        "dataAssetVersion": {
+            "defaultValue": "1",
+            "type": "String"
+        },
+        "userAssignedIdentities": {
+            "defaultValue": "/subscriptions/5f08d643-1910-4a38-a7c7-84a39d4f42e0/resourceGroups/mnarkdev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mnarkuai1",
+            "type": "String"
+        },
+        "utcValue": {
+            "defaultValue": "[utcNow()]",
+            "type": "String"
+        },
+        "jobName": {
+            "defaultValue": "labeling1",
+            "type": "String",
+            "metadata": {
+                "description": "Name of job."
+            }
+        },
+        "jobInstructionUri": {
+            "defaultValue": "https://www.testjobinstructions.com/labeling1.txt",
+            "type": "String",
+            "metadata": {
+                "description": "Uri to provide labeling job instructions."
+            }
+        },
+        "mediaType": {
+            "defaultValue": "Image",
+            "type": "String",
+            "metadata": {
+                "description": "Media type of the job."
+            }
+        },
+        "annotationType": {
+            "defaultValue": "BoundingBox",
+            "type": "String",
+            "metadata": {
+                "description": "AnnotationType type of the job."
+            }
+        },
+        "labelClasses": {
+            "defaultValue": {
+                "className1": {
+                    "displayName": "className1"
+                },
+                "className2": {
+                    "displayName": "className2"
+                }
+            },
+            "type": "Object",
+            "metadata": {
+                "description": "Label classes to choose from of the job."
+            }
+        },
+        "allowMultiSelect": {
+            "defaultValue": "false",
+            "type": "String",
+            "metadata": {
+                "description": "Indicates whether it is allowed to select multiple classes."
+            }
+        },
+        "enableIncrementalDatasetRefresh": {
+            "defaultValue": "false",
+            "type": "String",
+            "metadata": {
+                "description": "Indicates whether to enable incremental dataset refresh."
+            }
+        },
+        "mlAssistEnabled": {
+            "defaultValue": "false",
+            "type": "String",
+            "metadata": {
+                "description": "Indicates whether MLAssist feature is enabled."
+            }
+        },
+        "jobTags": {
+            "defaultValue": {},
+            "type": "Object",
+            "metadata": {
+                "description": "Optional : Provide JSON object with 'key,value' pairs to add as tags on dataset. Example- {\"sampleTag1\": \"tagValue1\", \"sampleTag2\": \"tagValue2\"}"
+            }
+        }
+    },
+    "variables": {
+        "storageAccountResourceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "keyVaultResourceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+        "appInsightsResourceId": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
+        "workspaceResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
+        "datastoreResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores', parameters('workspaceName'), parameters('datastoreName'))]",
+        "dataVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/data/versions', parameters('workspaceName'), parameters('dataAssetName'), parameters('dataAssetVersion'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "encryption": {
+                    "services": {
+                        "blob": {
+                            "enabled": true
+                        },
+                        "file": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "supportsHttpsTrafficOnly": true
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2019-09-01",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "tenantId": "[subscription().tenantId]",
+                "sku": {
+                    "name": "standard",
+                    "family": "A"
+                },
+                "accessPolicies": []
+            }
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[parameters('applicationInsightsName')]",
+            "location": "[if(or(equals(parameters('location'),'eastus2'), equals(parameters('location'),'centraluseuap')),'southcentralus',parameters('location'))]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web"
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces",
+            "apiVersion": "2020-03-01",
+            "name": "[parameters('workspaceName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[parameters('applicationInsightsName')]",
+                "[parameters('keyVaultName')]",
+                "[parameters('storageAccountName')]"
+            ],
+            "sku": {
+                "tier": "enterprise",
+                "name": "enterprise"
+            },
+            "identity": {
+                "type": "systemAssigned"
+            },
+            "properties": {
+                "friendlyName": "[parameters('workspaceName')]",
+                "storageAccount": "[variables('storageAccountResourceId')]",
+                "keyVault": "[variables('keyVaultResourceId')]",
+                "applicationInsights": "[variables('appInsightsResourceId')]"
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/computes",
+            "apiVersion": "2020-06-01",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('trainingComputeName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "computeType": "AmlCompute",
+                "properties": {
+                    "vmSize": "[parameters('computeVmSize')]",
+                    "scaleSettings": {
+                        "minNodeCount": "[parameters('computeMinNodeCount')]",
+                        "maxNodeCount": "[parameters('computeMaxNodeCount')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/computes",
+            "apiVersion": "2020-06-01",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('inferencingComputeName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "computeType": "AmlCompute",
+                "properties": {
+                    "vmSize": "[parameters('computeVmSize')]",
+                    "scaleSettings": {
+                        "minNodeCount": "[parameters('computeMinNodeCount')]",
+                        "maxNodeCount": "[parameters('computeMaxNodeCount')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(parameters('storageAccountName'), '/', 'default', '/', parameters('targetTrainingBlobContainer'))]",
+            "dependsOn": [
+                "[parameters('storageAccountName')]"
+            ]
+        },
+        {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2019-10-01-preview",
+            "name": "UploadDataToBlob",
+            "location": "eastus",
+            "dependsOn": [
+                "[parameters('storageAccountName')]",
+                "[parameters('targetTrainingBlobContainer')]"
+            ],
+            "kind": "AzureCLI",
+            "identity": {
+                "type": "userAssigned",
+                "userAssignedIdentities": {
+                    "[parameters('userAssignedIdentities')]": {}
+                }
+            },
+            "properties": {
+                "containerSettings": {
+                    "containerGroupName": null
+                },
+                "forceUpdateTag": "[parameters('utcValue')]",
+                "azCliVersion": "2.13.0",
+                "arguments": "[concat(parameters('dataForUpload'), ' ', parameters('targetTrainingBlobContainer'), ' ', parameters('targetTrainingBlobPathInContainer'), ' ', parameters('storageAccountName'))]",
+                "scriptContent": "wget $1; downloadfilename=$(basename $1); az storage blob upload -f $downloadfilename -c $2/$3 --account-name $4 -n $downloadfilename",
+                "timeout": "PT30M",
+                "cleanupPreference": "OnSuccess",
+                "retentionInterval": "P1D",
+                "environmentVariables": [
+                    {
+                        "name": "AZURE_STORAGE_KEY",
+                        "secureValue": "[listKeys(variables('workspaceResourceId'), '2020-09-01-preview').userStorageKey]"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/datastores",
+            "apiVersion": "2020-09-01-preview",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('datastoreName'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]",
+                "[parameters('targetTrainingBlobContainer')]"
+            ],
+            "properties": {
+                "contents": {
+                    "type": "AzureBlob",
+                    "AzureStorage": {
+                        "AccountName": "[parameters('storageAccountName')]",
+                        "ContainerName": "[parameters('targetTrainingBlobContainer')]",
+                        "Credentials": {
+                            "type": "AccountKey",
+                            "accountKey": {
+                                "key": "[listKeys(variables('workspaceResourceId'), '2020-09-01-preview').userStorageKey]"
+                            }
+                        },
+                        "Endpoint": "core.windows.net",
+                        "Protocol": "https"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/data/versions",
+            "apiVersion": "2020-09-01-preview",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('dataAssetName'), '/', parameters('dataAssetVersion'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]",
+                "UploadDataToBlob",
+                "[parameters('datastoreName')]"
+            ],
+            "properties": {
+                "datastoreId": "[variables('datastoreResourceId')]",
+                "assetPath": {
+                    "path": "[parameters('targetTrainingBlobPathInContainer')]",
+                    "isDirectory": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/labelingjobs",
+            "apiVersion": "2020-09-01-preview",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('jobName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[parameters('workspaceName')]",
+                "[variables('dataVersionResourceId')]",
+                "[parameters('trainingComputeName')]",
+                "[parameters('inferencingComputeName')]"
+            ],
+            "properties": {
+                "jobType": "Labeling",
+                "datasetConfiguration": {
+                    "assetName": "[parameters('dataAssetName')]",
+                    "enableIncrementalDatasetRefresh": "[parameters('enableIncrementalDatasetRefresh')]",
+                    "datasetVersion": "[parameters('dataAssetVersion')]"
+                },
+                "mlAssistConfiguration": {
+                    "inferencingComputeBinding": {
+                        "computeId": "[parameters('inferencingComputeName')]"
+                    },
+                    "trainingComputeBinding": {
+                        "computeId": "[parameters('trainingComputeName')]"
+                    },
+                    "mlAssistEnabled": "[parameters('mlAssistEnabled')]"
+                },
+                "jobInstructions": {
+                    "uri": "[parameters('jobInstructionUri')]"
+                },
+                "labelingJobMediaProperties": {
+                    "mediaType": "[parameters('mediaType')]",
+                    "annotationType": "[parameters('annotationType')]"
+                },
+                "labelCategories": {
+                    "DefaultCategory": {
+                        "displayName": "DefaultCategory",
+                        "allowMultiSelect": "[parameters('allowMultiSelect')]",
+                        "classes": [parameters('labelClasses')]
+                    }
+                },
+                "Tags": "[parameters('jobTags')]"
+            }
+        }
+    ],
+    "outputs": {
+        "result": {
+            "type": "Object",
+            "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces/labelingjobs', parameters('workspaceName'), parameters('jobName')))]"
+        }
+    }
+}
