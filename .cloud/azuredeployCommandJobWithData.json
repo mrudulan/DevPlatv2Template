@@ -142,11 +142,8 @@
             "type": "String"
         },
         "jobCommand": {
-            "defaultValue": [
-                "python",
-                "train.py"
-            ],
-            "type": "Array",
+            "defaultValue": "python train.py",
+            "type": "String",
             "metadata": {
                 "description": "Start up command in code job."
             }
@@ -175,7 +172,8 @@
         "workspaceResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
         "datastoreResourceID": "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores', parameters('workspaceName'), parameters('datastoreName'))]",
         "dataVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/data/versions', parameters('workspaceName'), parameters('dataAssetName'), parameters('dataAssetVersion'))]",
-        "environmentResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/environments', parameters('workspaceName'), parameters('jobCuratedEnvironmentName'))]"
+        "environmentResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/environments', parameters('workspaceName'), parameters('jobCuratedEnvironmentName'))]",
+        "computeResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/computes', parameters('workspaceName'), parameters('computeName'))]"
     },
     "resources": [
         {
@@ -416,13 +414,13 @@
                 "[parameters('workspaceName')]",
                 "[variables('codeVersionResourceId')]",
                 "[variables('dataVersionResourceId')]",
-                "[parameters('computeName')]"
+                "[variables('computeResourceId')]"
             ],
             "properties": {
                 "jobType": "Command",
                 "environmentId": "[variables('environmentResourceId')]",
                 "computeBinding": {
-                    "computeId": "[parameters('computeName')]",
+                    "computeId": "[variables('computeResourceId')]",
                     "nodeCount": "1"
                 },
                 "dataBindings": {
