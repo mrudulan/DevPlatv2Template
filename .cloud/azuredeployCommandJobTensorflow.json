@@ -117,11 +117,8 @@
             "type": "String"
         },
         "jobCommand": {
-            "defaultValue": [
-                "python",
-                "train.py"
-            ],
-            "type": "Array",
+            "defaultValue": "python train.py",
+            "type": "String",
             "metadata": {
                 "description": "Start up command in code job."
             }
@@ -163,7 +160,8 @@
         "codeVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/codes/versions', parameters('workspaceName'), parameters('codeAssetName'), parameters('codeAssetVersion'))]",
         "workspaceResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
         "datastoreResourceID": "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores', parameters('workspaceName'), parameters('datastoreName'))]",
-        "environmentResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/environments', parameters('workspaceName'), parameters('jobCuratedEnvironmentName'))]"
+        "environmentResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/environments', parameters('workspaceName'), parameters('jobCuratedEnvironmentName'))]",
+        "computeResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/computes', parameters('workspaceName'), parameters('computeName'))]"
     },
     "resources": [
         {
@@ -386,13 +384,13 @@
             "dependsOn": [
                 "[parameters('workspaceName')]",
                 "[variables('codeVersionResourceId')]",
-                "[parameters('computeName')]"
+                "[variables('computeResourceId')]"
             ],
             "properties": {
                 "jobType": "Command",
                 "environmentId": "[variables('environmentResourceId')]",
                 "computeBinding": {
-                    "computeId": "[parameters('computeName')]",
+                    "computeId": "[variables('computeResourceId')]",
                     "nodeCount": "1"
                 },
                 "codeConfiguration": {
