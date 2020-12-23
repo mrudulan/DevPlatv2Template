@@ -1,0 +1,115 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "defaultValue": "mirtest-v2",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure Machine Learning workspace."
+            }
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the SKU size for interactive and remote compute."
+            }
+        },
+        "onlineEndpointName": {
+            "defaultValue": "mirendpoint1",
+            "type": "String"
+        },
+        "onlineDeploymentName": {
+            "defaultValue": "mirdepblue1",
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
+            "apiVersion": "2020-12-01-preview",
+            "location": "[parameters('location')]",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]"
+            ],
+            "identity": {
+                "type": "systemAssigned"
+            },
+            "properties": {
+                "description": "This is a test endpoint created from ARM template",
+                "properties": {},
+                "trafficRules": {},
+                "computeConfiguration": {
+                    "computeType": "Managed"
+                },
+                "authMode": "AMLToken"
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments",
+            "apiVersion": "2020-12-01-preview",
+            "location": "[parameters('location')]",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'), '/', parameters('onlineDeploymentName'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]",
+                "[parameters('onlineEndpointName')]"
+            ],
+            "tags": {},
+            "properties": {
+                "description": "this is a test deployment created from ARM template",
+                "properties": {
+                    "prop1": "value1",
+                    "prop2": "value2"
+                },
+                "scaleSettings": {
+                    "scaleType": "Manual",
+                    "instanceCount": 1,
+                    "Minimum": 1,
+                    "Maximum": 1
+                },
+                "modelReference": {
+                    "referenceType": "Id",
+                    "id": "/subscriptions/ad203158-bc5d-4e72-b764-2607833a71dc/resourceGroups/mir-mgmt-test-westus/providers/Microsoft.MachineLearningServices/workspaces/mirtest-v2/models/sklearn_regression_model.pkl/versions/3"
+                },
+                "EnvironmentId": "/subscriptions/ad203158-bc5d-4e72-b764-2607833a71dc/resourceGroups/mir-mgmt-test-westus/providers/Microsoft.MachineLearningServices/workspaces/mirtest-v2/environments/sklearninference/versions/5",
+                "CodeConfiguration": {
+                    "CodeArtifactId": "/subscriptions/ad203158-bc5d-4e72-b764-2607833a71dc/resourceGroups/mir-mgmt-test-westus/providers/Microsoft.MachineLearningServices/workspaces/mirtest-v2/codes/scorefile/versions/1",
+                    "Command": "score.py"
+                },
+                "deploymentConfiguration": {
+                    "computeType": "Managed",
+                    "appInsightsEnabled": true,
+                    "containerResourceRequirements": {
+                        "cpu": 1.5,
+                        "memoryInGB": 1.0
+                    },
+                    "OSType": "Linux",
+                    "InstanceType": "Standard_F4s_v2"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
+            "apiVersion": "2020-12-01-preview",
+            "location": "[parameters('location')]",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]"
+            ],
+            "identity": {
+                "type": "systemAssigned"
+            },
+            "properties": {
+                "description": "This is a test endpoint created from ARM template",
+                "properties": {},
+                "trafficRules": {"[parameters('onlineDeploymentName')]": 100},
+                "computeConfiguration": {
+                    "computeType": "Managed"
+                },
+                "authMode": "AMLToken"
+            }
+        }
+    ]
+}
