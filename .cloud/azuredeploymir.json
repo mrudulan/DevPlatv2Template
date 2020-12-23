@@ -67,12 +67,7 @@
                 },
                 "modelReference": {
                     "referenceType": "Id",
-                    "id": "/subscriptions/ad203158-bc5d-4e72-b764-2607833a71dc/resourceGroups/mir-mgmt-test-westus/providers/Microsoft.MachineLearningServices/workspaces/mirtest-v2/models/sklearn_regression_model.pkl/versions/3"
-                },
-                "EnvironmentId": "/subscriptions/ad203158-bc5d-4e72-b764-2607833a71dc/resourceGroups/mir-mgmt-test-westus/providers/Microsoft.MachineLearningServices/workspaces/mirtest-v2/environments/sklearninference/versions/5",
-                "CodeConfiguration": {
-                    "CodeArtifactId": "/subscriptions/ad203158-bc5d-4e72-b764-2607833a71dc/resourceGroups/mir-mgmt-test-westus/providers/Microsoft.MachineLearningServices/workspaces/mirtest-v2/codes/scorefile/versions/1",
-                    "Command": "score.py"
+                    "id": "/subscriptions/ad203158-bc5d-4e72-b764-2607833a71dc/resourceGroups/mir-mgmt-test-westus/providers/Microsoft.MachineLearningServices/workspaces/mirtest-v2/models/GaussianNCD/versions/1"
                 },
                 "deploymentConfiguration": {
                     "computeType": "Managed",
