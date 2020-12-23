@@ -51,6 +51,10 @@ Learn how Azure Machine Learning can help you streamline the building, training,
 
 [![Train On Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmrudulan%2FDevPlatv2Template%2Fmaster%2F.cloud%2FazuredeployOnlineEndpoint.json)
 
+### Deploy a LightGBM model as an endpoint on Managed compute
+
+[![Train On Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmrudulan%2FDevPlatv2Template%2Fmaster%2F.cloud%2Fazuredeploymir.json)
+
 
 This ARM template creates a code job in Azure Machine Learning workspace.
 
