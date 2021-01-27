@@ -3,7 +3,7 @@
 We now have ability to deploy your model to fully managed compute.
 
 
-# Deploy a sklearn model as an endpoint on managed compute
+# Deploy a sklearn model on managed compute
 
 [![Train On Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmrudulan%2FDevPlatv2Template%2Fmaster%2F.cloud%2Fazuredeploymir.json)
 
