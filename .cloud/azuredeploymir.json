@@ -3,14 +3,14 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "defaultValue": "mirtest-v2",
+            "defaultValue": "mnarkweurope",
             "type": "String",
             "metadata": {
                 "description": "Specifies the name of the Azure Machine Learning workspace."
             }
         },
         "location": {
-            "defaultValue": "[resourceGroup().location]",
+            "defaultValue": "West Europe",
             "type": "String",
             "metadata": {
                 "description": "Specifies the SKU size for interactive and remote compute."
@@ -67,15 +67,11 @@
                 },
                 "modelReference": {
                     "referenceType": "Id",
-                    "id": "/subscriptions/ad203158-bc5d-4e72-b764-2607833a71dc/resourceGroups/mir-mgmt-test-westus/providers/Microsoft.MachineLearningServices/workspaces/mirtest-v2/models/GaussianNCD/versions/1"
+                    "id": "/subscriptions/92c76a2f-0e1c-4216-b65e-abf7a3f34c1e/resourceGroups/mnark1/providers/Microsoft.MachineLearningServices/workspaces/mnarkweurope/models/sklearnNCD/versions/1"
                 },
                 "deploymentConfiguration": {
                     "computeType": "Managed",
                     "appInsightsEnabled": true,
-                    "containerResourceRequirements": {
-                        "cpu": 1.5,
-                        "memoryInGB": 1.0
-                    },
                     "OSType": "Linux",
                     "InstanceType": "Standard_F4s_v2"
                 }
