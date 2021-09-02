@@ -30,6 +30,10 @@ Learn how Azure Machine Learning can help you streamline the building, training,
 
 # Getting Started
 
+### Deploy a GPT 3 model on azure machine learning
+
+[![Train On Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmrudulan%2FDevPlatv2Template%2Fmaster%2F.cloud%2FVanilla_Gpt3_Deployment.json)
+
 ### Train a LightGBM model w/ Datasets
 
 [![Train With Datasets On Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmrudulan%2FDevPlatv2Template%2Fmaster%2F.cloud%2FazuredeployCommandJobWithData.json)
