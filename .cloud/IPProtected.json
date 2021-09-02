@@ -132,16 +132,16 @@
       "properties": {
         "endpointComputeType": "Managed",
         "model": "azureml://feeds/openai/types/models/names/davinci/versions/1",
-        "environmentVariables": {
-          "AZUREML_OAI_REDIS_HOST": "[variables('AZUREML_OAI_REDIS_HOST_VALUE')]",
-          "AZUREML_OAI_REDIS_KEY": "[variables('AZUREML_OAI_REDIS_KEY_VALUE')]"
-        },
         "instanceType": "[parameters('engineApiConfigInstanceType')]",
         "scaleSettings": {
           "scaleType": "Default"
         },
         "sku": {
             "capacity": "[parameters('engineApiConfigInstanceCount')]"
+        },
+        "properties": {
+          "AZUREML_OAI_REDIS_HOST": "[variables('AZUREML_OAI_REDIS_HOST_VALUE')]",
+          "AZUREML_OAI_REDIS_KEY": "[variables('AZUREML_OAI_REDIS_KEY_VALUE')]"
         }
       }
     }
