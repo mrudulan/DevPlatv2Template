@@ -16,7 +16,7 @@
                 "azureml://feeds/openai/models/ada/versions/1.0"
             ],
             "type": "String"
-        }
+        },
         "authMode": {
             "defaultValue": "AMLToken",
             "allowedValues": [
@@ -41,10 +41,10 @@
         "location": {
             "defaultValue": "centraluseuap",
             "type": "String"
-        },
+        }
     },
     "variables": {
-        "redisCacheResourceId": "[resourceId('Microsoft.Cache/Redis/jenns')]",
+        "redisCacheResourceId": "[resourceId('Microsoft.Cache/Redis', 'jenns')]",
         "redisSuffix": "redis.cache.windows.net",
         "redisHost": "jenns.redis.cache.windows.net",
         "redisHostWithSuffix": "[variables('redisHost')]",
