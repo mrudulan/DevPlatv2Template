@@ -51,10 +51,7 @@
             "properties": {
                 "authMode": "AMLToken",
                 "description": "This is an online endpoint created by an ARM template",
-                "properties": {},
-                "traffic": {
-                    "[parameters('deploymentName')]": 100
-                }
+                "properties": {}
             }
         },
         {
