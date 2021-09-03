@@ -2,32 +2,23 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "machineLearningApiVersion": {
-            "defaultValue": "2021-10-01",
-            "type": "String"
-        },
-        "redisCacheApiVersion": {
-            "defaultValue": "2020-12-01",
-            "type": "String"
-        },
-        "location": {
-            "type": "String"
-        },
         "workspaceName": {
             "type": "String",
             "metadata": {
                 "description": "Specifies the name of the Azure Machine Learning workspace."
             }
         },
-        "onlineEndpointDescription": {
-            "defaultValue": "This is an online endpoint created by an ARM template",
+        "model": {
+            "defaultValue": "azureml://feeds/openai/models/davinci/versions/1.0",
+            "allowedValues": [
+                "azureml://feeds/openai/models/davinci/versions/1.0",
+                "azureml://feeds/openai/models/babel/versions/1.0",
+                "azureml://feeds/openai/models/ada/versions/1.0"
+            ],
             "type": "String"
-        },
-        "onlineEndpointTags": {
-            "defaultValue": {},
-            "type": "Object"
-        },
+        }
         "authMode": {
+            "defaultValue": "AMLToken",
             "allowedValues": [
                 "AMLToken",
                 "Key",
@@ -35,47 +26,39 @@
             ],
             "type": "String"
         },
-        "redisHost": {
-            "defaultValue": "jenns.redis.cache.windows.net",
-            "type": "String"
-        },
-        "redisCacheName": {
-            "defaultValue": "jenns",
-            "type": "String"
-        },
         "instanceType": {
             "defaultValue": "Standard_F2s_v2",
             "type": "String"
         },
         "onlineEndpointName": {
-            "defaultValue": "myEndpointName",
+            "defaultValue": "gptendpoint",
             "type": "String"
         },
         "deploymentName": {
-            "defaultValue": "myDeploymentName",
+            "defaultValue": "blue",
             "type": "String"
         },
-        "model": {
-            "defaultValue": "azureml://feeds/openai/models/davinci/versions/1.0",
+        "location": {
+            "defaultValue": "centraluseuap",
             "type": "String"
-        }
+        },
     },
     "variables": {
-        "redisCacheResourceId": "[resourceId('Microsoft.Cache/Redis', parameters('redisCacheName'))]",
+        "redisCacheResourceId": "[resourceId('Microsoft.Cache/Redis/jenns')]",
         "redisSuffix": "redis.cache.windows.net",
-        "redisHostWithSuffix": "[parameters('redisHost')]",
-        "AZUREML_OAI_REDIS_HOST_VALUE": "[if(endsWith(parameters('redisHost'), variables('redisSuffix')), parameters('redisHost'), variables('redisHostWithSuffix'))]"
+        "redisHost": "jenns.redis.cache.windows.net",
+        "redisHostWithSuffix": "[variables('redisHost')]",
+        "AZUREML_OAI_REDIS_HOST_VALUE": "[if(endsWith(variables('redisHost'), variables('redisSuffix')), variables('redisHost'), variables('redisHostWithSuffix'))]"
     },
     "resources": [
         {
             "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
-            "apiVersion": "[parameters('machineLearningApiVersion')]",
+            "apiVersion": "2021-10-01",
             "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
             "location": "[parameters('location')]",
-            "tags": "[parameters('onlineEndpointTags')]",
             "properties": {
                 "authMode": "[parameters('authMode')]",
-                "description": "[parameters('onlineEndpointDescription')]",
+                "description": "This is an online endpoint created by an ARM template",
                 "properties": {},
                 "traffic": {
                     "[parameters('deploymentName')]": 100
@@ -84,7 +67,7 @@
         },
         {
             "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments",
-            "apiVersion": "[parameters('machineLearningApiVersion')]",
+            "apiVersion": "2021-10-01",
             "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'), '/', parameters('deploymentName'))]",
             "location": "[parameters('location')]",
             "dependsOn": [
@@ -104,7 +87,7 @@
                 "instanceType": "[parameters('instanceType')]",
                 "properties": {
                     "AZUREML_OAI_REDIS_HOST": "[variables('AZUREML_OAI_REDIS_HOST_VALUE')]",
-                    "AZUREML_OAI_REDIS_KEY": "[listKeys(variables('redisCacheResourceId'), parameters('redisCacheApiVersion')).primaryKey]"
+                    "AZUREML_OAI_REDIS_KEY": "[listKeys(variables('redisCacheResourceId'), '2020-12-01').primaryKey]"
                 },
                 "scaleSettings": {
                     "ScaleType": "Default"
