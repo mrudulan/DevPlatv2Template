@@ -17,15 +17,6 @@
             ],
             "type": "String"
         },
-        "authMode": {
-            "defaultValue": "AMLToken",
-            "allowedValues": [
-                "AMLToken",
-                "Key",
-                "AADToken"
-            ],
-            "type": "String"
-        },
         "instanceType": {
             "defaultValue": "Standard_F2s_v2",
             "type": "String"
@@ -44,9 +35,9 @@
         }
     },
     "variables": {
-        "redisCacheResourceId": "[resourceId('Microsoft.Cache/Redis', 'jenns')]",
+        "redisCacheResourceId": "[resourceId('Microsoft.Cache/Redis', 'gpt3')]",
         "redisSuffix": "redis.cache.windows.net",
-        "redisHost": "jenns.redis.cache.windows.net",
+        "redisHost": "gpt3.redis.cache.windows.net",
         "redisHostWithSuffix": "[variables('redisHost')]",
         "AZUREML_OAI_REDIS_HOST_VALUE": "[if(endsWith(variables('redisHost'), variables('redisSuffix')), variables('redisHost'), variables('redisHostWithSuffix'))]"
     },
@@ -57,7 +48,7 @@
             "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
             "location": "[parameters('location')]",
             "properties": {
-                "authMode": "[parameters('authMode')]",
+                "authMode": "AMLToken",
                 "description": "This is an online endpoint created by an ARM template",
                 "properties": {},
                 "traffic": {
