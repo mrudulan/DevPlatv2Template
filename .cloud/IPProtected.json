@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "defaultValue": "mnarkdev1",
+            "defaultValue": "testeyesoff",
             "type": "String",
             "metadata": {
                 "description": "Specifies the name of the Azure Machine Learning workspace."
@@ -23,7 +23,7 @@
             "type": "String"
         },
         "onlineEndpointName": {
-            "defaultValue": "gptendpoint",
+            "defaultValue": "gpt3endpoint",
             "type": "String"
         },
         "deploymentName": {
@@ -31,16 +31,19 @@
             "type": "String"
         },
         "location": {
-            "defaultValue": "centraluseuap",
+            "defaultValue": "eastus",
             "type": "String"
         }
     },
     "variables": {
-        "redisCacheResourceId": "[resourceId('Microsoft.Cache/Redis', 'gpt3')]",
+        "redisName": "shasham-eastus",
+        "redisPort": "6380",
         "redisSuffix": "redis.cache.windows.net",
-        "redisHost": "gpt3.redis.cache.windows.net",
+        "redisCacheResourceId": "[resourceId('Microsoft.Cache/Redis', variables('redisName'))]",
+        "redisHost": "[concat(variables('redisName'), '.', variables('redisSuffix'), ':', variables('redisPort'))]",
         "redisHostWithSuffix": "[variables('redisHost')]",
-        "AZUREML_OAI_REDIS_HOST_VALUE": "[if(endsWith(variables('redisHost'), variables('redisSuffix')), variables('redisHost'), variables('redisHostWithSuffix'))]"
+        "AZUREML_OAI_REDIS_HOST_VALUE": "[if(endsWith(variables('redisHost'), variables('redisSuffix')), variables('redisHost'), variables('redisHostWithSuffix'))]",
+        "endpointUserIdentity": "/subscriptions/ad203158-bc5d-4e72-b764-2607833a71dc/resourceGroups/vienna-test-westus2/providers/Microsoft.ManagedIdentity/userAssignedIdentities/vienna-test-westus2-msi"
     },
     "resources": [
         {
@@ -48,6 +51,12 @@
             "apiVersion": "2021-10-01",
             "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
             "location": "[parameters('location')]",
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[variables('endpointUserIdentity')]": {}
+                }
+            },
             "properties": {
                 "authMode": "AMLToken",
                 "description": "This is an online endpoint created by an ARM template",
