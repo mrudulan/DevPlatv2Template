@@ -1,4 +1,4 @@
-# With one click deploy GPT-3 model on Azure Machine Learning Service
+# With one click deploy GPT-3 model on Azure Machine Learning
 
 We now have ability to deploy and use gpt-3 model with Azure machine learning. 
 
