@@ -91,41 +91,6 @@
                     "ScaleType": "Default"
                 }
             }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2015-01-01",
-            "name": "updateEndpointWithTraffic",
-            "dependsOn": [
-                "[parameters('deploymentName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "parameters": {},
-                "template": {
-                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-                    "contentVersion": "1.0.0.0",
-                    "parameters": {},
-                    "variables": {},
-                    "resources": [
-                        {
-                            "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
-                            "apiVersion": "2021-10-01",
-                            "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
-                            "location": "[parameters('location')]",
-                            "properties": {
-                                "authMode": "AMLToken",
-                                "description": "This is an online endpoint created by an ARM template",
-                                "properties": {},
-                                "traffic": {
-                                    "[parameters('deploymentName')]": 100
-                                }
-                            }
-                        }
-                    ],
-                    "outputs": {}
-                }
-            }
         }
     ]
 }
