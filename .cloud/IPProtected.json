@@ -36,7 +36,7 @@
         }
     },
     "variables": {
-        "redisName": "shasham-eastus",
+        "redisName": "shasham-redis",
         "redisPort": "6380",
         "redisSuffix": "redis.cache.windows.net",
         "redisCacheResourceId": "[resourceId('Microsoft.Cache/Redis', variables('redisName'))]",
