@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "defaultValue": "testeyesoff",
+            "defaultValue": "mnarkeastus",
             "type": "String",
             "metadata": {
                 "description": "Specifies the name of the Azure Machine Learning workspace."
@@ -36,7 +36,7 @@
         }
     },
     "variables": {
-        "redisName": "shasham-redis",
+        "redisName": "gpt3eastus",
         "redisPort": "6380",
         "redisSuffix": "redis.cache.windows.net",
         "redisCacheResourceId": "[resourceId('Microsoft.Cache/Redis', variables('redisName'))]",
