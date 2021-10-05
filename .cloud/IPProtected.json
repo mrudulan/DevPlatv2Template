@@ -36,13 +36,6 @@
         }
     },
     "variables": {
-        "redisName": "shasham-redis",
-        "redisPort": "6380",
-        "redisSuffix": "redis.cache.windows.net",
-        "redisCacheResourceId": "[resourceId('Microsoft.Cache/Redis', variables('redisName'))]",
-        "redisHost": "[concat(variables('redisName'), '.', variables('redisSuffix'), ':', variables('redisPort'))]",
-        "redisHostWithSuffix": "[variables('redisHost')]",
-        "AZUREML_OAI_REDIS_HOST_VALUE": "[if(endsWith(variables('redisHost'), variables('redisSuffix')), variables('redisHost'), variables('redisHostWithSuffix'))]",
         "endpointUserIdentity": "/subscriptions/ad203158-bc5d-4e72-b764-2607833a71dc/resourceGroups/vienna-test-westus2/providers/Microsoft.ManagedIdentity/userAssignedIdentities/vienna-test-westus2-msi"
     },
     "resources": [
@@ -84,8 +77,6 @@
                 "model": "[parameters('model')]",
                 "instanceType": "[parameters('instanceType')]",
                 "properties": {
-                    "AZUREML_OAI_REDIS_HOST": "[variables('AZUREML_OAI_REDIS_HOST_VALUE')]",
-                    "AZUREML_OAI_REDIS_KEY": "[listKeys(variables('redisCacheResourceId'), '2020-12-01').primaryKey]"
                 },
                 "scaleSettings": {
                     "ScaleType": "Default"
