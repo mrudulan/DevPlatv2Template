@@ -1,0 +1,77 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "defaultValue": "endpointpool",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure Machine Learning workspace."
+            }
+        },
+        "model": {
+            "defaultValue": "azureml://feeds/openai/models/davinci/versions/1.0",
+            "allowedValues": [
+                "azureml://feeds/openai/models/davinci-pool/versions/1.0",
+                "azureml://feeds/openai/models/babel-pool/versions/1.0",
+                "azureml://feeds/openai/models/ada-pool/versions/1.0"
+            ],
+            "type": "String"
+        },
+        "instanceType": {
+            "defaultValue": "Standard_F2s_v2",
+            "type": "String"
+        },
+        "onlineEndpointName": {
+            "type": "String"
+        },
+        "deploymentName": {
+            "type": "String"
+        },
+        "location": {
+            "defaultValue": "eastus",
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
+            "apiVersion": "2021-10-01",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "authMode": "AMLToken",
+                "description": "This is an online endpoint created by an ARM template",
+                "properties": {}
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments",
+            "apiVersion": "2021-10-01",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'), '/', parameters('deploymentName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[parameters('onlineEndpointName')]"
+            ],
+            "sku": {
+                "name": "Default",
+                "description": "The amount of pipereplica capacity to create in the endpoint pool.",
+                "capacity": 1
+            },
+            "kind": "Managed",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "endpointComputeType": "Managed",
+                "model": "[parameters('model')]",
+                "instanceType": "[parameters('instanceType')]",
+                "properties": {
+                },
+                "scaleSettings": {
+                    "ScaleType": "Default"
+                }
+            }
+        }
+    ]
+}
