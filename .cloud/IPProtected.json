@@ -18,6 +18,12 @@
             ],
             "type": "String"
         },
+        "poolEndpointUri":{
+            "type": "String",
+            "metadata": {
+                "description": "Uri of the pool manager endpoint holding the pipereplica compute."
+            }
+        },
         "instanceType": {
             "defaultValue": "Standard_F2s_v2",
             "type": "String"
@@ -73,6 +79,8 @@
                 "type": "None"
             },
             "properties": {
+                "poolEndpointUri": "[parameters('poolEndpointUri')]",
+                "poolEnabled": true,
                 "endpointComputeType": "Managed",
                 "model": "[parameters('model')]",
                 "instanceType": "[parameters('instanceType')]",
