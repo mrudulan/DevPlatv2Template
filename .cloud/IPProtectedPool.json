@@ -1,0 +1,87 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "defaultValue": "testeyesoff",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure Machine Learning workspace."
+            }
+        },
+        "model": {
+            "defaultValue": "azureml://feeds/openai/models/davinci/versions/1.0",
+            "allowedValues": [
+                "azureml://feeds/openai/models/davinci/versions/1.0",
+                "azureml://feeds/openai/models/babel/versions/1.0",
+                "azureml://feeds/openai/models/ada/versions/1.0"
+            ],
+            "type": "String"
+        },
+        "instanceType": {
+            "defaultValue": "Standard_F2s_v2",
+            "type": "String"
+        },
+        "onlineEndpointName": {
+            "defaultValue": "gpt3endpoint",
+            "type": "String"
+        },
+        "deploymentName": {
+            "defaultValue": "blue",
+            "type": "String"
+        },
+        "location": {
+            "defaultValue": "eastus",
+            "type": "String"
+        }
+    },
+    "variables": {
+        "endpointUserIdentity": "/subscriptions/ad203158-bc5d-4e72-b764-2607833a71dc/resourceGroups/vienna-test-westus2/providers/Microsoft.ManagedIdentity/userAssignedIdentities/vienna-test-westus2-msi"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
+            "apiVersion": "2021-10-01",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
+            "location": "[parameters('location')]",
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[variables('endpointUserIdentity')]": {}
+                }
+            },
+            "properties": {
+                "authMode": "AMLToken",
+                "description": "This is an online endpoint created by an ARM template",
+                "properties": {}
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments",
+            "apiVersion": "2021-10-01",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'), '/', parameters('deploymentName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[parameters('onlineEndpointName')]"
+            ],
+            "sku": {
+                "name": "Default",
+                "capacity": 1
+            },
+            "kind": "Managed",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "endpointComputeType": "Managed",
+                "model": "[parameters('model')]",
+                "instanceType": "[parameters('instanceType')]",
+                "properties": {
+                },
+                "scaleSettings": {
+                    "ScaleType": "Default"
+                }
+            }
+        }
+    ]
+}
