@@ -101,20 +101,20 @@
                     "resources": [
                         {
                             "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
-                            "apiVersion": "2020-12-01-preview",
-                            "location": "[parameters('location')]",
+                            "apiVersion": "2021-10-01",
                             "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
+                            "location": "[parameters('location')]",
                             "identity": {
-                                "type": "systemAssigned"
+                                "type": "UserAssigned",
+                                "userAssignedIdentities": {
+                                    "[variables('endpointUserIdentity')]": {}
+                                }
                             },
                             "properties": {
-                                "description": "This is a test endpoint created from ARM template",
-                                "properties": {},
-                                "trafficRules": { "[parameters('deploymentName')]": 100 },
-                                "computeConfiguration": {
-                                    "computeType": "Managed"
-                                },
-                                "authMode": "AMLToken"
+                                "authMode": "AMLToken",
+                                "description": "This is an online endpoint created by an ARM template",
+                                "traffic": { "[parameters('deploymentName')]": 100 },
+                                "properties": {}
                             }
                         }
                     ],
