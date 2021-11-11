@@ -1,0 +1,429 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "defaultValue": "jenns-generate-13",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure Machine Learning workspace."
+            }
+        },
+        "keyVaultName": {
+            "defaultValue": "[concat('kva', uniqueString(parameters('workspaceName')))]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure keyvault to create."
+            }
+        },
+        "storageAccountName": {
+            "defaultValue": "[concat('storagea', uniqueString(parameters('workspaceName')))]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure storage account to create."
+            }
+        },
+        "applicationInsightsName": {
+            "defaultValue": "[concat('aia', uniqueString(parameters('workspaceName')))]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the Azure app insights account to create."
+            }
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the SKU size for interactive and remote compute."
+            }
+        },
+        "computeName": {
+            "defaultValue": "aks",
+            "type": "String",
+            "metadata": {
+                "description": "The compute you want this job to run on"
+            }
+        },
+        "azuremlDatastoreName": {
+            "defaultValue": "azureml",
+            "type": "String"
+        },
+        "azuremlBlobContainer": {
+            "defaultValue": "azureml",
+            "type": "String",
+            "metadata": {
+                "description": "The blob container that holds the model."
+            }
+        },
+        "modelPathInContainer": {
+            "defaultValue": "ExperimentRun/dcid.command1/outputs/model.joblib",
+            "type": "String",
+            "metadata": {
+                "description": "Path to the model file."
+            }
+        },
+        "modelName": {
+            "defaultValue": "mymodel",
+            "type": "String"
+        },
+        "modelVersion": {
+            "defaultValue": "1",
+            "type": "String"
+        },
+        "targetScoringScriptDatastoreName": {
+            "defaultValue": "test",
+            "type": "String"
+        },
+        "targetScoringScriptBlobContainer": {
+            "defaultValue": "localuploads",
+            "type": "String",
+            "metadata": {
+                "description": "The blob container that holds the scoring script."
+            }
+        },
+        "targetScoringScriptPathInContainer": {
+            "defaultValue": "scoring",
+            "type": "String"
+        },
+        "scoringScriptForUpload": {
+            "defaultValue": "https://raw.githubusercontent.com/mrudulan/DevPlatv2Template/master/code/lightgbm/iris/score.py",
+            "type": "String"
+        },
+        "scoringScriptName": {
+            "defaultValue": [
+                "score.py"
+            ],
+            "type": "Array",
+            "metadata": {
+                "description": "Scoring script name."
+            }
+        },
+        "codeAssetName": {
+            "defaultValue": "scoringAsset",
+            "type": "String",
+            "metadata": {
+                "description": "Name of code asset."
+            }
+        },
+        "codeAssetVersion": {
+            "defaultValue": "1",
+            "type": "String"
+        },
+        "onlineEndpointName": {
+            "defaultValue": "aks-endpoint",
+            "type": "String"
+        },
+        "onlineDeploymentName": {
+            "defaultValue": "aks-deployment",
+            "type": "String"
+        },
+        "environmentName": {
+            "defaultValue": "my-sklearn-environment",
+            "type": "String",
+            "metadata": {
+                "description": "Environment name. Environment should be registered in advance, as this template does not create it."
+            }
+        },
+        "environmentVersion": {
+            "defaultValue": "1",
+            "type": "String"
+        },
+        "userAssignedIdentities": {
+            "defaultValue": "/subscriptions/5f08d643-1910-4a38-a7c7-84a39d4f42e0/resourceGroups/mnarkdev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mnarkuai1",
+            "type": "String"
+        },
+        "utcValue": {
+            "defaultValue": "[utcNow()]",
+            "type": "String"
+        }
+    },
+    "variables": {
+        "storageAccountResourceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "keyVaultResourceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+        "appInsightsResourceId": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
+        "workspaceResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]",
+        "azuremlDatastoreResourceID": "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores', parameters('workspaceName'), parameters('azuremlDatastoreName'))]",
+        "scoringDatastoreResourceID": "[resourceId('Microsoft.MachineLearningServices/workspaces/datastores', parameters('workspaceName'), parameters('targetScoringScriptDatastoreName'))]",
+        "codeVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/codes/versions', parameters('workspaceName'), parameters('codeAssetName'), parameters('codeAssetVersion'))]",
+        "modelVersionResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/models/versions', parameters('workspaceName'), parameters('modelName'), parameters('modelVersion'))]",
+        "environmentResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces/environments/versions', parameters('workspaceName'), parameters('environmentName'), parameters('environmentVersion'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "encryption": {
+                    "services": {
+                        "blob": {
+                            "enabled": true
+                        },
+                        "file": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "supportsHttpsTrafficOnly": true
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2019-09-01",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "tenantId": "[subscription().tenantId]",
+                "sku": {
+                    "name": "standard",
+                    "family": "A"
+                },
+                "accessPolicies": []
+            }
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[parameters('applicationInsightsName')]",
+            "location": "[if(or(equals(parameters('location'),'eastus2'), equals(parameters('location'),'centraluseuap')),'southcentralus',parameters('location'))]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web"
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces",
+            "apiVersion": "2020-03-01",
+            "name": "[parameters('workspaceName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[parameters('applicationInsightsName')]",
+                "[parameters('keyVaultName')]",
+                "[parameters('storageAccountName')]"
+            ],
+            "sku": {
+                "tier": "enterprise",
+                "name": "enterprise"
+            },
+            "identity": {
+                "type": "systemAssigned"
+            },
+            "properties": {
+                "friendlyName": "[parameters('workspaceName')]",
+                "storageAccount": "[variables('storageAccountResourceId')]",
+                "keyVault": "[variables('keyVaultResourceId')]",
+                "applicationInsights": "[variables('appInsightsResourceId')]"
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/computes",
+            "apiVersion": "2018-11-19",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('computeName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "computeType": "Aks"
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/datastores",
+            "apiVersion": "2020-09-01-preview",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('azuremlDatastoreName'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "contents": {
+                    "type": "AzureBlob",
+                    "AzureStorage": {
+                        "AccountName": "[parameters('storageAccountName')]",
+                        "ContainerName": "[parameters('azuremlBlobContainer')]",
+                        "Credentials": {
+                            "type": "AccountKey",
+                            "accountKey": {
+                                "key": "[listKeys(variables('workspaceResourceId'), '2020-09-01-preview').userStorageKey]"
+                            }
+                        },
+                        "Endpoint": "core.windows.net",
+                        "Protocol": "https"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/models",
+            "apiVersion": "2020-09-01-preview",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('modelName'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/models/versions",
+            "apiVersion": "2020-09-01-preview",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('modelName'), '/', parameters('modelVersion'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]",
+                "[parameters('azuremlDatastoreName')]",
+                "[parameters('modelName')]"
+            ],
+            "properties": {
+                "datastoreId": "[variables('azuremlDatastoreResourceID')]",
+                "assetPath": {
+                    "path": "[parameters('modelPathInContainer')]",
+                    "isDirectory": false
+                },
+                "tags": {},
+                "properties": {}
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(parameters('storageAccountName'), '/', 'default', '/', parameters('targetScoringScriptBlobContainer'))]",
+            "dependsOn": [
+                "[parameters('storageAccountName')]"
+            ]
+        },
+        {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2019-10-01-preview",
+            "name": "UploadScriptToBlob",
+            "location": "eastus",
+            "dependsOn": [
+                "[parameters('storageAccountName')]",
+                "[parameters('targetScoringScriptBlobContainer')]"
+            ],
+            "kind": "AzureCLI",
+            "identity": {
+                "type": "userAssigned",
+                "userAssignedIdentities": {
+                    "[parameters('userAssignedIdentities')]": {}
+                }
+            },
+            "properties": {
+                "containerSettings": {
+                    "containerGroupName": null
+                },
+                "forceUpdateTag": "[parameters('utcValue')]",
+                "azCliVersion": "2.13.0",
+                "arguments": "[concat(parameters('scoringScriptForUpload'), ' ', parameters('targetScoringScriptBlobContainer'), ' ', parameters('targetScoringScriptPathInContainer'), ' ', parameters('storageAccountName'))]",
+                "scriptContent": "wget $1; downloadfilename=$(basename $1); az storage blob upload -f $downloadfilename -c $2/$3 --account-name $4 -n $downloadfilename",
+                "timeout": "PT30M",
+                "cleanupPreference": "OnSuccess",
+                "retentionInterval": "P1D",
+                "environmentVariables": [
+                    {
+                        "name": "AZURE_STORAGE_KEY",
+                        "secureValue": "[listKeys(variables('workspaceResourceId'), '2020-09-01-preview').userStorageKey]"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/datastores",
+            "apiVersion": "2020-09-01-preview",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('targetScoringScriptDatastoreName'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]",
+                "[parameters('targetScoringScriptBlobContainer')]"
+            ],
+            "properties": {
+                "contents": {
+                    "type": "AzureBlob",
+                    "AzureStorage": {
+                        "AccountName": "[parameters('storageAccountName')]",
+                        "ContainerName": "[parameters('targetScoringScriptBlobContainer')]",
+                        "Credentials": {
+                            "type": "AccountKey",
+                            "accountKey": {
+                                "key": "[listKeys(variables('workspaceResourceId'), '2020-09-01-preview').userStorageKey]"
+                            }
+                        },
+                        "Endpoint": "core.windows.net",
+                        "Protocol": "https"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/codes/versions",
+            "apiVersion": "2020-09-01-preview",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('codeAssetName'), '/', parameters('codeAssetVersion'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]",
+                "UploadScriptToBlob",
+                "[parameters('targetScoringScriptDatastoreName')]"
+            ],
+            "properties": {
+                "datastoreId": "[variables('scoringDatastoreResourceID')]",
+                "assetPath": {
+                    "path": "[parameters('targetScoringScriptPathInContainer')]",
+                    "isDirectory": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints",
+            "apiVersion": "2020-12-01-preview",
+            "location": "[parameters('location')]",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]",
+                "[parameters('computeName')]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "computeConfiguration": {
+                    "computeType": "Managed",
+                }
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces/onlineEndpoints/deployments",
+            "apiVersion": "2020-12-01-preview",
+            "location": "[parameters('location')]",
+            "name": "[concat(parameters('workspaceName'), '/', parameters('onlineEndpointName'), '/', parameters('onlineDeploymentName'))]",
+            "dependsOn": [
+                "[parameters('workspaceName')]",
+                "[parameters('onlineEndpointName')]",
+                "[variables('codeVersionResourceId')]",
+                "[variables('modelVersionResourceId')]"
+            ],
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "modelReference": {
+                    "ReferenceType": "Id",
+                    "id": "[variables('modelVersionResourceId')]"
+                },
+                "environmentId": "[variables('environmentResourceId')]",
+                "codeConfiguration": {
+                    "codeArtifactId": "[variables('codeVersionResourceId')]",
+                    "command": "[parameters('scoringScriptName')]"
+                },
+                "deploymentConfiguration": {
+                    "computeType": "Managed",
+                    "instanceType": "Standard_D2_v3"
+                },
+                "scaleSettings": {
+                    "scaleType": "Manual",
+                    "instanceCount": 1
+                }
+            }
+        }
+    ]
+}
